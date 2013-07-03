@@ -1,0 +1,844 @@
+#+TODO: WRITE REVISE SHORTEN | DONE
+#+DRAWERS: PROPERTIES SYNOPSIS COMMENTS LOGBOOK
+##+LaTeX_CLASS: book
+#+LaTeX_CLASS_OPTIONS: [twoside,titlepage, 10pt] 
+#+TITLE:     La composition électroacoustique pour interface inventée
+#+AUTHOR:    Martin Marier
+#+EMAIL:     mariermartin@gmail.com
+#+DATE:      18 novembre 2011
+#+DESCRIPTION:
+#+KEYWORDS:
+#+LANGUAGE:  fr
+#+OPTIONS:   H:3 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+LATEX_HEADER: \usepackage[frenchb]{babel}
+#+LATEX_HEADER: \usepackage{natbib}
+
+\pagebreak
+* Introduction
+Dans les années '40, les nouvelles technologies permirent à Pierre Schaeffer
+de découvrir la musique concrète \citep{schaeffer_traite_1966}, celle qu'on
+appela plus tard musique acousmatique ou musique électroacoustique.  Il était
+désormais possible de composer des musiques qui n'agençaient plus uniquement
+les sons instrumentaux, mais aussi tous les sons susceptibles d'être
+enregistrés ou synthétisés.
+
+Cet art des sons fixés a donné naissance à l'art de la diffusion qui est
+toujours pratiqué aujourd'hui.  Dans la salle de concert, où une multitude de
+haut-parleurs sont disposés, l'interprète spatialise le son, mais n'est
+responsable ni de sa génération, ni du déroulement temporel.  C'est la
+fixation du son sur support qui, à l'origine, rendait tous les sons
+accessibles au musical.  Mais de nos jours, la technologie permet une
+manipulation en direct non seulement de l'espace et de la dynamique, mais
+aussi d'une multitude d'autres paramètres du son.  Il serait donc possible
+d'interpréter réellement la musique électroacoustique; de la jouer de la même
+façon qu'une pièce instrumentale.
+
+Mais l'accès à cette technologie ne règle pas tous les problèmes.  Il faut
+aussi disposer d'une interface gestuelle qui permettra un contrôle expressif
+de tous ces paramètres, et c'est là le coeur de ma recherche.  À cet effet,
+j'ai conçu une interface musicale que j'ai appelée l'éponge.  
+
+Afin de mieux comprendre ce qu'est l'expressivité et comment il est possible
+de l'obtenir, j'ai développé les notions de "contrôle musical" et de "contrôle
+paramétrique" que je décrirai plus précisément à la section [[Contrôle
+paramétrique vs contrôle musical]].  Je présenterai ensuite l'interface musicale
+que j'ai conçue et fabriquée: l'éponge.  Après ce survol technique,
+j'élaborerai les différents enjeux et difficultés associés à cette approche:
+la pérennité des oeuvres, la multidisciplinarité et surtout, les stratégies
+qui permettent d'établir un rapport geste-son clair.  Je parlerai ensuite des
+compositions qui ont été écrites pour l'éponge et, pour finir, les avenues
+possibles pour le futur seront présentées.
+
+* Contrôle paramétrique vs contrôle musical
+# J'ai inventé les expressions "contrôle musical" et "contrôle paramétrique"
+# afin d'améliorer ma compréhension des différents types de contrôle que le
+# geste humain peut avoir sur le son.  Idéalement, ce vocablaire
+# supplémentaire aidera aussi à mieux définir ce qu'est l'expressivité et à
+# découvrir comment elle peut être mise en oeuvre dans instrument de musique
+# numérique.
+   Au cours de mes recherches, j'ai développé les notions de "contrôles
+   musical" et de "contrôle paramétrique".  Je les définies comme étant les
+   deux extrémités d'un continuum sur lequel pourrait se trouver une grande
+   variété de types de contrôle.
+
+   Le contrôle musical permet le transfert direct du caractère du geste vers
+   le caractère du son, mais ne permet pas de contrôler précisément la valeur
+   d'un paramètre.  Sur une guitare acoustique, par exemple, il est
+   relativement facile de rejouer une même phrase musicale en lui donnant
+   chaque fois un caractère différent (agressif, bondissant, sombre, brillant,
+   etc.).  Par contre, il est impossible, et ce même pour un interprète
+   aguerri, de jouer deux notes rigoureusement identiques, mais dont l'une
+   serait précisément 4 dB plus forte que l'autre.
+
+   Le contrôle paramétrique, quant à lui, permet ce degré de précision, mais
+   ne permet pas le transfert du caractère du geste.  Si, par exemple, on
+   utilise le clavier alphanumérique d'un ordinateur pour entrer la fréquence
+   exacte d'un oscillateur, on est bien en présence d'un contrôle
+   paramétrique.  À ce niveau extrême, le geste est complètement divorcé du
+   son.
+
+   Le tableau \ref{tab:parametriqueMusical} résume la différence entre
+   contrôle musical et contrôle paramétrique.  Une fois ces deux extrêmes
+   établis, il est relativement aisé de classer les différents contrôles dans
+   le continuum.
+
+   Le potentiomètre d'une table de mixage offre un contrôle légèrement plus
+   musical que le clavier d'ordinateur puisqu'un aspect du geste est relié à
+   un aspect du son.  Cependant, l'énergie du geste n'est pas transférée à
+   l'énergie du son.  Si c'était la vitesse de déplacement du potentiomètre
+   qui affectait l'amplitude, on se rapprocherait encore du contrôle musical.
+
+   La référence en ce qui concerne le contrôle musical, c'est le corps sonore.
+   Tout objet qu'on peut manipuler physiquement et qui produit un son
+   acoustique offre forcément un contrôle musical.  Paradoxalement, ce qui
+   différencie les instruments acoustiques de tous les autres corps sonores,
+   c'est qu'ils permettent le contrôle précis de certains paramètres musicaux,
+   comme par exemple, celui de la hauteur.
+
+   Le défi des luthiers traditionnels, c'est de fabriquer des instruments
+   acoustiques qui offrent un contrôle paramétrique, alors que la difficulté
+   en lutherie numérique, c'est de fabriquer des instruments qui offrent un
+   contrôle musical.
+
+#+CAPTION:    Un résumé des différences entre "contrôle paramétrique" et "contrôle musical".
+#+LABEL:      tab:parametriqueMusical
+
+| Contrôle paramétrique             | Contrôle musical                    |
+|-----------------------------------+-------------------------------------|
+|-----------------------------------+-------------------------------------|
+| Appareil électroacoustique        | Corps sonore acoustique.            |
+| numérique à contrôles binaires.   |                                     |
+|-----------------------------------+-------------------------------------|
+| /Mapping one-to-one./             | /Mapping many-to-many./             |
+|-----------------------------------+-------------------------------------|
+| Contrôle précis.                  | Contrôle global du caractère        |
+|                                   | musical.                            |
+|-----------------------------------+-------------------------------------|
+| L'énergie du geste est            | L'énergie du geste est directement  |
+| indépendante de l'amplitude.      | liée à l'amplitude du son.          |
+|-----------------------------------+-------------------------------------|
+| Le caractère du geste est détaché | Le caractère du geste est transféré |
+| du caractère du son.              | au caractère du son.                |
+|-----------------------------------+-------------------------------------|
+| Rapport geste-son inexistant.     | Rapport geste-son clair.            |
+
+
+
+** Les problèmes du contrôle paramétrique
+   Le contrôle paramétrique est très utile et souhaitable lors d'un certain
+   type de travail en studio comme, par exemple, les étapes de mixage et de
+   mastering qui ont bien besoin de ce genre de précision.  Par contre, ce
+   type de contrôle est mal adapté à l'interprétation ou à l'improvisation.
+   Il comporte trois principales faiblesses.
+
+*** Le côté ludique est atrophié
+    Comme il n'y a pas de transfert direct du caractère du geste au caractère
+    du son, le contrôle paramétrique requiert une étape d'analyse avant
+    l'intervention.  Il est évident que jouer d'un instrument acoustique
+    requiert aussi un travail intellectuel, mais insuffler un caractère au son
+    ne se fait qu'en un seul geste.  Inversement, insuffler un caractère en
+    utilisant un séquenceur audio requiert la coordination et l'ajustement
+    précis d'une multitude de courbes d'automatisation.  Cette tâche
+    laborieuse, recherchée avec soin, est longue à mettre en oeuvre et empêche
+    donc l'approche impromptue du jeu musical traditionnel.
+*** Obtenir des caractères musicaux est très difficiles
+    Si nos outils n'offrent que des contrôles proches du contrôle
+    paramétrique, transformer un caractère /agressif/ en un caractère
+    /scintillant/, par exemple, sera extrêmement difficile.  Si on veut
+    arriver à ce résultat en utilisant un séquenceur audio traditionnel, il
+    faudra encore une fois ajuster et coordonner une multitude de courbes
+    d'automatisation.
+
+    Malheureusement, en musique électroacoustique, le contrôle musical pur ne
+    se trouve qu'à l'étape de la prise de son, lors de la manipulation des
+    corps sonores.  La grande majorité des outils logiciels disponibles à ce
+    jour n'offrent que des contrôles plus proches du contrôle paramétrique.
+
+# ** L'éponge
+# Les signaux des capteurs sont ensuite mis en correspondance avec des
+# paramètres d'algorithmes de synthèse et de traitement du son à travers une
+# étape de /mapping/ (voir la section [[Le mapping]]).  Si tout est réussi, un
+# lien clair entre les gestes de l'interprète et le son produit sera établi.
+
+# Il sera argumenté qu'un tel rapport geste-son peut améliorer l'interaction
+# avec le public, permettre de retrouver l'aspect ludique du jeu instrumental
+# et aider à produire des gestes musicaux qu'il serait difficile de créer
+# autrement.  Cependant, avant d'aller plus en avant avec cet argumentaire, il
+# est nécessaire de clarifier certaines des expressions qui seront utilisées
+# dans ce document.
+
+*** L'interaction avec le public est minimale
+    Dans le cadre d'une expérience, \citet{wanderley_musical_2005} ont demandé
+    à des participants de regarder, d'écouter ou de regarder /et/ écouter la
+    performance d'un clarinettiste.  La perception que les participants
+    avaient de la tension musicale et des phrasés musicaux était enregistrée
+    en temps réel.  En outre, \citet{wanderley_musical_2005} ont observé que
+    les gestes de l'interprète ne faisaient pas que suivre les phrases
+    musicales, ils les prolongeaient dans le silence.  Les résultats de cette
+    expérience ont montré que les participants qui voyaient l'interprète
+    comprenaient mieux les messages musicaux qui étaient véhiculés.  Les
+    informations sur la tension et les phrasés seraient donc communiquées
+    tant par le geste que par le son.
+
+    Il se pourrait donc que l'absence d'interprète diminue la compréhension du
+    message musical.  À cela, me basant sur mon expérience personnelle,
+    j'ajouterais que la seule présence d'un interprète ne suffit pas.  Quand
+    le contrôle qu'exerce le performeur est trop loin du contrôle musical, ses
+    gestes sont divorcés du son et ne contribuent pas à communiquer le
+    message.  Lors d'une performance de /live coding/ [fn:2: Le /live coding/
+    est une pratique qui consiste à utiliser un langage de programmation dédié
+    à la musique pour performer devant un public.  Traditionnellement, le code
+    du performeur est projeté sur grand écran pour que le public puisse
+    apprécier la qualité de son travail.], par exemple, les gestes et les
+    expressions faciales du codeur sont complètement détachés du son produit.
+* L'éponge: vers un contrôle musical de la musique électroacoustique
+
+   \begin{figure}[htbp]
+   \centering
+   \includegraphics[width=12cm]{figs/full.jpg}
+
+   \caption{L'éponge.}
+
+   \label{fig:spongeFull}
+   \end{figure}
+
+   L'éponge est une interface musicale que j'ai développée dans le but de
+  permettre l'interprétation devant public de pièces électroacoustiques.  Elle
+  ressemble en tout point à un coussin rayé (voir la figure
+  \ref{fig:spongeFull}), sauf que des capteurs installés à l'intérieur
+  détectent les chocs qu'elle subit, son inclinaison, ainsi que ses
+  déformations (compression, torsion, pliage).  Afin d'exploiter le potentiel
+  qu'offre le médium électroacoustique, j'ai développé une interface dont la
+  forme et l'aspect ne rappellent aucun instrument acoustique.  Une interface
+  calquée sur un instrument acoustique existant aurait permi d'exploiter
+  l'expertise d'un instrumentiste aguerri \citep{Dobrian2006}.  Par contre
+  elle aurait aussi conditionné le travail de création en imposant son mode de
+  jeu, ce qui aurait considérablement biaisé les choix esthétiques.
+
+  En résumé, l'éponge a été conçue pour permettre d'interpréter la musique
+  électroacoustique en permettant un contrôle musical.
+
+# - produire des gestes musicaux qu'il serait impossible de créer autrement;
+# - améliorer l'interaction avec le public pour la musique électroacoustique;
+# - retrouver l'aspect ludique du jeu instrumental en musique électroacoustqiue.
+
+** Construction et capteurs
+    \begin{figure}[htbp]
+    \centering
+    \includegraphics[width=12cm]{figs/fullNaked.jpg}
+
+    \caption{L'éponge nue.  On peut voir les deux capteurs de pression (carrés
+    gris), les accéléromètres (composantes rouges), l'interface Arduino Fio et
+    le module XBee.  Les sept boutons ne sont pas visibles sur cette photo;
+    ils sont sous l'éponge, du côté droit.}
+
+    \label{fig:spongeNaked}
+    \end{figure}
+
+    L'éponge comporte 11 capteurs analogiques: sept interrupteurs momentanés,
+    deux capteurs de pression (FSR) et deux accéléromètres 3D.  Comme les deux
+    accéléromètres sont sensibles aux trois dimensions, l'éponge fournit un
+    total de 15 signaux.
+
+    Les capteurs de pression permettent de détecter la pression appliquée sur
+    l'éponge (les carrés gris visibles sur la figure \ref{fig:spongeNaked}).
+    Les accéléromètres (les composantes rouges visibles sur la figure
+    \ref{fig:spongeNaked}) captent une multitude de déformations et
+    mouvements.  Ils servent d'abord à détecter l'inclinaison globale de
+    l'éponge sur les trois axes, soit le roulis, le tangage et le lacet
+    (illustrés par la figure \ref{fig:roulis}).[fn:1: Les accéléromètres ne
+    peuvent fournir que deux de ces rotations au même moment.  Par exemple,
+    lorsque l'éponge est tenue horizontalement, il est impossible de connaître
+    le lacet.  Il faudrait ajouter une boussole à l'éponge pour rendre cette
+    donnée disponible.]
+
+    \begin{figure}[htbp]
+    \centering
+    \includegraphics[width=8cm]{figs/roulisTangageLacet.png}
+    \caption{Les notions de roulis, tangage et lacet sont empruntées au domaine
+    de l'aéronautique.}
+    \label{fig:roulis}
+    \end{figure}
+
+    Ensuite, en calculant les différences d'inclinaison entre les deux
+    accéléromètres, il est possible de déduire la torsion et le pliage.  Les
+    accéléromètres sont aussi utilisés pour détecter les chocs et les
+    vibrations.
+
+   Les six axes des accéléromètres ainsi que les deux capteurs de pression
+   sont connectés aux huit entrées analogiques d'une interface /Arduino Fio/.
+   Les sept boutons sont connectés à sept entrées numériques de la même
+   interface.
+
+   Chaque signal analogique est quantifié à 10 bits approximativement 300 fois
+   par secondes et est acheminé vers l'ordinateur via une interface /XBee/
+   (sans fil).  Si les pilotes adéquats sont installés, l'éponge apparaît au
+   système d'exploitation comme un périphérique sériel standard
+   (=/dev/ttyUSB0=, par exemple), lui permettant de fonctionner sur les trois
+   systèmes d'exploitation principaux, soit Linux, Mac OSX et Windows.
+
+** Le mapping
+*** /One-to-one/ ou /many-to-many/?
+   Le /mapping/ consiste à établir une correspondance entre les paramètres du
+   geste (les signaux issus des capteurs) et les paramètres des algorithmes de
+   traitement ou de génération du son.  C'est donc une étape incontournable de
+   tout travail avec une interface musicale.  Lors de la conception d'un
+   /mapping/, on peut choisir l'une de ces quatre approches \citep{Hunt2003}:
+   - /one-to-one/ :: Un signal de contrôle n'affecte qu'un seul paramètre.
+   - /one-to-many/ :: Un signal de contrôle affecte plusieurs paramètres.
+   - /many-to-one/ :: Plusieurs signaux de contrôle n'affectent qu'un
+                      seul paramètre.
+   - /many-to-many/ :: Une combinaison des options précédentes: plusieurs
+                       signaux de contrôle affectent une multitude de
+                       paramètres.
+   
+   Les /mappings/ implémentés dans les outils électracoustiques traditionnels
+   entrent habituellement dans la première catégorie.  Sur une table de
+   mixage, par exemple, le potentiomètre principal ne fait varier qu'un seul
+   paramètre: l'amplitude.
+
+   Un bon exemple de /mapping one-to-many/ est le potentiomètre
+   d'interpolation de préréglage qu'on trouve dans les plugiciels de la série
+   GRM Tools (figure \ref{fig:grm}).  En actionnant ce seul potentiomètre,
+   tous les autres paramètres du traitement sont affectés.
+
+   \begin{figure}[htbp]
+   \centering
+   \includegraphics[width=8cm]{figs/grm}
+   \caption{Une capture d'écran du plugiciel \emph{Doppler} de la collection
+   \emph{GRM Tools}. Le long potentiomètre horizontal situé au bas de la
+   fenêtre permet d'interpoler entre les préréglages numérotés de 1 à 8.}
+   \label{fig:grm}
+   \end{figure}
+
+# *** Quelques lignes directrices
+#     Les expériences qu'ont faites \citep{Hunt2003} ont permis d'établir des
+#     des lignes directrices qui aident à concevoir des /mappings/ plus
+#     engageants pour les interprètes.  Ils conseillent d'imiter les instruments
+#     acoustiques 
+
+#     - L'amplitude nécessite de l'énergie :: En suivant cette règle, on exige
+#          de la part de l'interprète un effort physique pour produire du son,
+#          comme c'est le cas sur un instrument acoustique.
+
+#     - Exploitation de la bimanualité :: Sur beaucoup d'instruments
+#          acoustiques, l'excitation et l'articulation sont deux aspects
+#          contrôlés par deux membres différents. Sur les instruments à cordes,
+#          une main excite alors que l'autre contrôle. Sur les instruments à
+#          vent, le souffle excite pendant que les deux mains contrôlent.
+
+# \subsubsection{Utilisation de mappings complexes}
+# \label{sec:util-de-mappings-complexes}
+# Les mappings \emph{many-to-many} sont omniprésents dans les
+# instruments acoustiques. La force du souffle dans une trompette
+# affecte une multitude de paramètres, alors que la hauteur de la note
+# est affectée par une multitude de contrôles.
+
+# \subsubsection{Contrôle indirect du timbre }
+# \label{sec:le-controle-du-est-indirect}
+# Il n'y a pas de boutons \emph{treble} ou \emph{bass} sur une guitare,
+# c'est en modifiant la façon générale de jouer qu'on arrive à changer
+# le timbre.
+
+   
+    Toutes les parties logicielles de l'éponge sont des outils qui servent de
+    près ou de loin à concevoir des /mappings/ qui contribent à établir un
+    contrôle musical.
+
+# La création de musique pour éponge (et de l'éponge elle-même) est un projet
+# de longue haleine qui comporte de multiples facettes.  Pour bien comprendre
+# les décisions qui ont été prises et les positions qui sont défendues, il est
+# essentiel de connaître les motivations qui ont mené à cette démarche.
+
+# À la base de ce projet, il y a, et ce depuis le départ, une fascination pour
+# la musique électroacoustique: les possibilités qu'offrent l'enregistrement,
+# le montage, le mixage et le traitement des sons sont infinies et permettent
+# de créer des univers sonores qu'il serait impossible de matérialiser
+# autrement.  Cependant, l'accès à ce monde sonore infini a un coût:
+# l'appareillage électroacoustique traditionnel (consoles, logiciels) permet
+# un contrôle très précis d'une multitude de paramètres du son, mais ne permet
+# pas un contrôle global d'une multitude de paramètres par un seul geste.  En
+# d'autre terme, les outils électroacoustiques permettent un /contrôle
+# paramétrique/ très fin mais ne permettent pas (ou rarement) un /contrôle
+# musical/.
+** Logiciel
+   La partie logicielle de l'éponge consiste en une biblitothèque implémentée
+   dans l'environnement SuperCollider.  Elle est composée d'une dizaine de
+   classes qui implémentent ces trois fonctionnalités: un étage de réception
+   des signaux, un étage d'extraction de traits caractéristiques et un
+   interpolateur de préréglages.  Elle est sans cesse en évolution.  La
+   version actuelle peut être téléchargée sur /github/ en suivant ce lien:
+
+   http://github.com/marierm/mmExtensions.
+*** Réception des signaux
+    La réception des signaux est implémentée dans la classe =Sponge= et permet
+    à SuperCollider d'ouvrir le port sériel approprié et de rendre les données
+    brutes des capteurs disponibles aux autres étages de /mapping/.
+*** Extraction de traits caractéristiques
+   L'expression /extraction de traits caractéristiques/ est une traduction de
+   l'anglais /feature extraction/.  Un trait caractéristique est un signal qui
+   peut être déduit ou calculé à partir des signaux bruts des capteurs.  Par
+   exemple, il est possible d'extraire de l'éponge le trait caractéristique
+   $pitch_1$ (l'inclinaison de l'accéléromètre numéro un) qui est calculé à
+   partir des axes $x$ et $z$ de l'accéléromètre 1 : \(pitch_1 =
+   \arctan\left(\frac{acc_1x}{acc_1z}\right)\).
+
+   \begin{figure}[htbp]
+   \centering
+   \includegraphics[scale=0.5]{figs/ssFeatures.png}
+
+   \caption{L'interface graphique qui permet d'activer et de désactiver les
+   nombreux traits caractéristiques préprogrammés.}
+
+   \label{fig:ssFeatures}
+   \end{figure}
+
+   Il est aussi possible d'extraire d'autres traits caractéristiques à partir
+   de traits caractéristiques existants et ainsi de suite.  Par exemple, les
+   traits caractéristiques $roll_1$ et $roll_2$ sont obtenus respectivement
+   avec les formules \(roll_1 = \arctan\left(\frac{acc_1y}{acc_1z}\right)\) et
+   \(roll_2 = \arctan\left(\frac{acc_2y}{acc_2z}\right)\).  Par la suite, on
+   peut obtenir le trait caractéristique $twist$ en soustrayant $roll_2$ de
+   $roll_1$.  Ces interdépendances sont gérées automatiquement par la classe
+   =Feature= : si un utilisateur active le trait caractéristique $twist$, les
+   traits caractéristiques $roll_1$ et $roll_2$ seront automatiquement
+   activés.
+
+   L'extraction de traits caractéristiques permet de séparer le /mapping/ en
+   plusieurs étages, ce qui facilite la conception de /mappings/ complexes
+   \citep{Wanderley1998}.  De plus, cette stratégie rend disponibles des
+   signaux qui sont plus représentatifs du geste que les signaux bruts des
+   capteurs, ce qui aide à obtenir un contrôle musical.
+   
+   Il existe une multitudes de traits caractéristiques (environ 200)
+   préprogrammés pour l'éponge qui peuvent être activés ou désactivés très
+   rapidement selon les besoins de l'utilisateur.  La figure
+   \ref{fig:ssFeatures} est une capture d'écran de l'interface graphique qui
+   permet de gérer l'activation des différents traits caractéristiques.  Les
+   signaux correspondants aux traits caractéristiques deviennent alors
+   disponibles à l'utilisateur.  Il est aussi possible de les visionner
+   (figure \ref{fig:ssMonitor}) et de les acheminer vers d'autres applications
+   ou d'autres appareils sous forme de messages OSC (figure
+   \ref{fig:ssTwist} et \ref{fig:ssFeatures}).
+
+
+   \begin{figure}[htbp]
+   \centering
+   \includegraphics[scale=0.5]{figs/ssTwist.png}
+
+   \caption{L'interface graphique du trait caractéristique $twist$.
+   L'utilisateur peut choisir le format du message OSC qui sera envoyé.}
+
+   \label{fig:ssTwist}
+   \end{figure}
+
+   \begin{figure}[htbp]
+   \centering
+   \includegraphics[scale=0.5]{figs/ssMonitor.png}
+
+   \caption{Il est possible de visualiser les signaux des capteurs et des
+   traits caractéristiques.}
+
+   \label{fig:ssMonitor}
+   \end{figure}
+
+*** Interpolation de préréglages
+   Un système d'interpolation de préréglages permet à l'utilisateur de faire
+   varier une multitude de paramètres en n'agissant que sur un nombre limité
+   de contrôles
+   \citep{Freed2010,Bencina2005,Spain2002,Goudeseune2003,Momeni2003}.  De par
+   sa nature, un tel système facilite grandement la conception de /mappings/
+   complexes de type /many-to-many/, ce qui permet aussi de se rapprocher d'un
+   contrôle musical.
+
+   Le système d'interpolation de préréglages que j'ai développé prend la forme
+   d'un espace virtuel (à une ou plusieurs dimensions) dans lequel il est
+   possible de disposer une multitude de points représentant chacun un
+   préréglage. Par la suite, l'utilisateur peut déplacer un curseur dans cet
+   espace.  La valeur des multiples paramètres de chacun des préréglages varie
+   avec la position du curseur.
+
+   Le tableau \ref{tab:interpolation} illustre le fonctionnement d'un
+   interpolateur de préréglages à une dimension qui comporte simplement deux
+   points.  Dans cet exemple, les trois paramètres d'un filtre en cloche
+   varient en fonction de la position du contrôle d'interpolation.
+
+   #+CAPTION:    Les valeurs que prennent les paramètres d'un filtre cloche en fonction de la position du contrôle d'interpolation.
+   #+LABEL:      tab:interpolation
+
+|                       <r> |          <r14> |      <r> |       <r> |     <r> |
+|               Position du |          Poids |          |           |         |
+|                  contrôle |            des |          | Fréquence | Facteur |
+|           d'interpolation |    préréglages |     Gain |  centrale |       Q |
+|---------------------------+----------------+----------+-----------+---------|
+|                         A |          \(A\) |   +12 dB |    400 Hz |       3 |
+| \(\frac{1}{4}\) de course | \(\frac{3}{4} A + \frac{1}{4} B\) | +10.5 dB |    800 Hz |     3.5 |
+| \(\frac{1}{2}\) de course | \(\frac{1}{2} A + \frac{1}{2} B\) |    +9 dB |   1200 Hz |       4 |
+| \(\frac{3}{4}\) de course | \(\frac{1}{4} A + \frac{3}{4} B\) |  +7.5 dB |   1600 Hz |     4.5 |
+|                         B |          \(B\) |    +6 dB |   2000 Hz |       5 |
+
+   Les classes =Interpolator= et =PresetInterpolator= implémentent un système
+   d'interpolation de préréglage beaucoup plus complexe et beaucoup plus
+   versatile.  Il est possible d'y créer des espaces à un nombre arbitraire de
+   dimensions et d'y placer un nombre infini de préréglages (l'utilisateur
+   n'est limité que par les capacités de son ordinateur).  Le nombre de
+   dimensions de l'espace correspond au nombre de signaux de contrôles
+   utilisés (le nombre de capteurs).  Par exemple, on peut choisir de
+   connecter un accéléromètre 3D à un interpolateur de préréglages à trois
+   dimensions (une dimension pour chacun des axes de l'accéléromètre).
+   Autrement dit, on navigue dans l'espace 3D à l'aide de l'accéléromètre.
+   Les espaces à plus de trois dimensions sont plus difficile à imaginer, mais
+   il s'agit d'avoir autant de dimensions que de contrôleurs continus.
+
+   Pour utiliser l'interpolateur de préréglage avec l'éponge, on peut se créer
+   un espace d'interpolation à huit dimensions auxquelles on connecte les
+   huits signaux continus de l'éponge.  Le nombre de paramètres que l'on peut
+   contrôler est complètement indépendant du nombre de dimension.
+
+   #+CAPTION:    La fenêtre \emph{preset interpolator} permet à l'utilisateur de visualiser et de modifier l'emplacement des préréglages dans l'espaces. Si l'espace comporte plus de deux dimensions, il est évidemment impossible de toutes les visualiser.  Cependant, il est possible d'ouvrir plusieurs fenêtre /preset interpolator/ et de choisir quelles dimensions seront visualisées dans chacune d'elles. Chacun des points colorés correspond à un préréglage. Le point gris légèrement plus gros que les autres est le curseur. Le poids des points est représenté par des cercles transparents: plus le cercle autour d'un point est grand, plus le point a du poids. 
+   #+ATTR_LaTeX: scale=0.5
+   #+LABEL:      fig:presetInterpolator
+   [[file:figs/presetInterpolator.png]]
+   
+* Enjeux et défis
+** L'éponge: innterface ou instrument?
+   Les acteurs importants du domaine des nouvelles interfaces (ou nouveaux
+   instruments) ne s'entendent toujours pas sur la définition exacte de ces
+   deux termes.  Pour les besoins de la discussion, j'adopterai la définition
+   suggérée par \citet{Miranda2006} et illustrée par la figure
+   \ref{fig:instrumentVsInterface}.  Un instrument complet est constitué de
+   quatre étages successif: l'interface, le /mapping/, la génération du son et
+   la diffusion.  Comme on peut le voir, l'interface n'est en fait que le
+   premier étage d'un instrument, et c'est exactement ce que l'éponge est.
+
+   Fait important à noter, sur un instrument de musique numérique, les
+   différents étages sont discrets, alors que sur la majorité des instruments
+   acoustiques, les éléments sont indissociables les uns des autres.
+
+   \begin{figure}[htbp]
+   \centering
+   \includegraphics[width=10cm]{figs/instrument_interface.pdf}
+
+   \caption[Schéma de principe d'un instrument de musique
+   numérique.]{L'instrument de musique est un système complet alors que
+   l'interface ne représente que son premier étage.  Cette figure est une
+   adaptation de celle qu'on retrouve dans le livre de
+   \citet[p. 3]{Miranda2006}}
+
+   \label{fig:instrumentVsInterface}
+   \end{figure}
+
+** Établir un lien d'énergie
+   Plusieurs chercheurs sur les interfaces musicales
+   \citep{Ryan1991,hunt_importance_2002,paine_towards_2009} ont déjà tiré la
+   conclusion que, si l'on désire un rapport geste-son clair, il doit y avoir
+   un transfert de l'énergie du geste vers l'énergie du son.  Pour établir ce
+   transfert d'énergie, il est suggéré de faire correspondre la vitesse du
+   geste à l'amplitude du signal \citep{Hunt2000}.  Avec l'éponge et son
+   système d'extraction de traits caractéristiques, il est possible d'avoir
+   rapidement accès aux différentes /vitesses/ qui sont en jeu:
+   
+   - la vitesse de pression (dérivée du signal des capteurs de pressions);
+   - la vitesse de rotation globale de l'éponge sur chacun des axes;
+   - la vitesse de pliage et de torsion.
+
+   De plus, comme l'accélération est elle-même directement proportionnelle à
+   l'énergie, il est tout à fait cohérent d'affecter l'amplitude d'un son avec
+   les signaux qui proviennent directement des accéléromètres.  D'ailleurs,
+   dans la pièce /Clarinette/ (cette pièce est discutée à la section [[La
+   composition]]), les signaux des accéléromètres (filtrés par un passe haut)
+   sont utilisés comme excitateurs pour un synthétiseur à guide d'ondes.  Ce
+   /mapping/ a beaucoup de succès auprès du public: les gens comprennent
+   intuitivement le lien qui existe entre le geste et le son.
+   
+
+** Gestion de la polyphonie
+   L'éponge a été conçue comme une interface monophonique mais, rapidement, le
+   besoin de faire de la polyphonie s'est fait sentir.  Mis à part la solution
+   évidente qui consiste à utiliser plusieurs éponges, il existe quelques
+   façon d'arriver à jouer plusieurs voix.
+
+   La première consiste à utiliser les boutons de l'éponge pour démarrer et
+   arrêter différentes voix.  La stratégie utilisée jusqu'à maintenant
+   consiste à attribuer trois états différents à chaque bouton.  Voici à quels
+   comportements sont associés chacun des états.
+
+   1. Le processus est déclenché: une voix joue et on est en contrôle de ses
+      différents paramètres avec l'éponge.
+   2. Le processus continue, mais l'éponge ne contrôle plus les paramètres de
+      la voix.  La voix est gelée.
+   3. La voix s'éteint doucement (en fondu).
+
+   De cette façon, il est possible d'avoir une voix de polyphonie par bouton,
+   c'est-à-dire sept.  Cela fonctionne bien, mais il est très difficile pour
+   l'interprète de se souvenir de l'état de chacune des voix.  En réalité, il
+   est impossible de s'en sortir lorsque plus de trois voix dont le timbre est
+   semblable sont utilisées en même temps.
+
+   La deuxième façon de faire est très semblable; il n'y a qu'une exception:
+   au lieu d'utiliser le deuxième état pour geler la voix, on l'utilise pour
+   boucler la voix.  Aussitôt que le boucleur de geste décrit à la section
+   [[Boucleur de geste]] sera fonctionnel, cette stratégie remplacera la première.
+
+** Composer avec la multidisciplinarité
+   Être à la fois compositeur, interprète et concepteur d'instrument pose
+   certains problèmes qui peuvent être illustrés par l'exemple suivant.
+
+   Imaginons un compositeur-interprète-concepteur qui se retrouve face à un
+   problème musical typique: il n'est pas satisfait du résultat sonore qu'il
+   entend et veut le changer.  Trois possibilités s'offrent alors à lui.
+
+   D'abord, il peut opter pour l'approche de l'interprète.  Dans ce cas, il
+   pratiquera jusqu'à ce qu'il ait développé les habiletés qui lui permettront
+   de jouer la phrase musicale problématique de façon satisfaisante.  Il
+   pourrait aussi opter pour l'approche du compositeur, auquel cas il choisira
+   de remettre en question la musique elle-même et de recomposer des phrasés
+   mieux adaptés à l'instrument.  Sa dernière option serait l'approche du
+   concepteur.  Dans ce dernier cas, il choisira de modifier l'instrument de
+   façon à ce qu'il devienne possible de produire un résultat plus
+   satisfaisant.  Cette solution est la plus laborieuse puisqu'elle impose à
+   l'interprète de réapprendre à jouer de l'instrument modifié.
+
+   Un instrument performant et expressif doit se plier aux besoins de
+   l'interprète et du compositeur, mais le développement continuel de
+   l'instrument empêche de fixer les oeuvres et, pire encore, de rejouer des
+   oeuvres composées pour une version antérieure de l'instrument.
+
+   Découvrir et développer des stratégies qui permettront de conjuguer
+   développement continuel et pérennité des oeuvres est une partie importante
+   de cette recherche.  Pour l'instant, des systèmes des gestions de versions
+   comme Subversion ou Git (très utilisés par les programmeurs) sont utilisés
+   pour pouvoir facilement jongler avec les multiples versions d'une pièce.
+   Cette solution est très pratique pour le gestion de la partie logicielle,
+   mais n'est d'aucune utilité pour gérer différentes versions d'une
+   interface.
+
+** La question de la pérennité
+   La plupart du temps, en musique électroacoustique, la partition ne sert que
+   de support pour l'analyse ou d'aide à la diffusion.  Comme il s'agit
+   traditionnellement d'un art des sons fixés, cela ne pose pas de problème:
+   la pérennité de l'oeuvre est assurée par son support.  Mais lorsqu'on tombe
+   dans le domaine des arts d'interprétation, une oeuvre n'est considérée
+   pérenne qui si elle peut être réinterprétée.  Donc, pour assurer une longue
+   vie à une oeuvre pour éponge, on doit d'abord s'assurer que les appareils
+   et logiciels utilisés pourront être remplacés au fur et à mesure que la
+   technologie évolue.  Dans un deuxième temps, on doit aussi veiller à ce
+   qu'un interprète puisse apprendre et rejouer l'oeuvre.
+
+   Il est possible de remplir la première condition en documentant clairement
+   les processus utilisés de façon à ce qu'il soit possible de réimplémenter
+   les mêmes algorithmes en utilisant la technologie du futur.  Il est aussi
+   possible d'utiliser des technologies que l'on croit plus durables que
+   d'autres comme par exemples des logiciels dont le code source est ouvert.
+
+   Remplir la deuxième condition est délicat.  On pourrait croire que la
+   partition est la solution, mais ce n'est pas si simple.  Un des objectifs
+   de cette recherche est de permettre l'interprétation en exploitant le
+   médium électroacoustique.  Hors, il n'existe pas de système de notation
+   standard pour ce genre de musique.  Il est certes possible d'en concevoir
+   un, mais basé sur quoi?  Sur la notation traditionnelle?  Sur une notation
+   du geste comme celle de Laban pour la danse?
+
+   Thierry De Mey, pour sa pièce /Light Music/[fn:3: /Light Music/ est une
+   pièce pour "chef d'orchestre" et dispositif électronique.  Les gestes de
+   l'interprète sont suivis par des caméras vidéos et affectent le son], a
+   opté pour une partition hybride.  Certaines sections utilisent la notation
+   musicale traditionnelle, alors que d'autres emploient des dessins qui
+   évoquent les gestes que l'interprète doit faire.  Cette seule partition ne
+   suffirait pas à assurer la pérennité de cette oeuvre.  D'ailleurs, le
+   compositeur et son équipe ont dernièrement organisé un stage de formation
+   dont le but était de former des interprètes pour cette oeuvre.
+
+   Pour l'instant, développer un système de notation rigoureux et systématique
+   pour les oeuvres pour éponge n'est pas une priorité.  Pour assister le
+   travail sur la structure des pièces, un simple séquenceur est utilisé.
+   Après avoir été enregistrées, des performances sont retravaillées dans le
+   logiciel.  Par la suite, j'essaie de rejouer à l'éponge la version
+   retravaillée.  Si la version est injouable (ce qui est habituellement le
+   cas) je recommence.
+
+   Dans ce procédé, le logiciel constitue un substitut à la partition, mais
+   uniquement pour le travail de composition; il ne permet aucunement la
+   transmission des oeuvres.  Pour permettre une éventuelle transmission d'une
+   oeuvre, une stratégie impliquant des captations vidéo de bonne qualité et
+   de différents points de vue serait choisie plutôt qu'un système de
+   notation.
+
+* La composition
+** /Cymbale/, la pièce morte
+   /Cymbale/ avait été composée pour la toute première version de l'éponge,
+   celle qui était construite à partir d'une interface Infusion Systems
+   BlueTooth \citep{Marier2010}.  Cette technologie ne s'est pas avérée
+   adéquate pour ce type d'interface et, peu de temps après la création de la
+   pièce, l'éponge 2.0 a vu le jour.  Adapter /Cymbale/ à la nouvelle version
+   de l'éponge aurait représenté un travail considérable et, comme elle
+   n'était pas très satisfaisante esthétiquement, la pièce fut abandonnée.
+   
+   La décision a été consciente, mais la mort de /Cymbale/ n'était pas voulue.
+   Cet événement m'a appris à quel point les pièces écrites pour nouvelles
+   interfaces sont fragiles.
+   
+** /Clarinette/ et ses descendants
+   /Clarinette/ a un destin différent: elle est toujours jouée et elle évolue
+   sans cesse.  En fait, elle évolue à un point tel qu'il est difficile de
+   considérer qu'il s'agit encore de la même pièce!
+
+   /Clarinette/ est donc une pièce laboratoire.  À chaque nouvelle mouture, au
+   fur et à mesure que l'éponge offre de nouvelles possibilités, de nouveaux
+   éléments se greffent.  Au départ, il n'y avait que des enregistrements de
+   clarinette traités par granulation.  Ensuite, des sons de synthèse par
+   guide d'onde se sont ajoutés.  Parallèlement à cela, les stratégies de
+   /mapping/ se sont raffinées.  L'interpolateur de préréglage s'est
+   perfectionné et est devenu multidimensionnel, ce qui permet d'exploiter une
+   plus grande variété de gestes et d'avoir plus de précision.  Des boutons
+   ont été ajoutés, ce qui permet d'avoir un contrôle sur la polyphonie, de
+   déclencher des événement et de jouer avec des hauteurs discrètes.  Enfin,
+   des filtres formantiques et de la distorsion ont été intégrés.  
+
+   Si on ajoute à cela le fait que la structure n'est toujours pas fixée, il
+   n'est pas très étonnant que les différentes versions de /Clarinette/ ne se
+   ressemblent pas beaucoup.   Pour cette raison, elle porte toujours
+   un sous-titre.  Il existe trois versions importantes de la pièce:
+
+   - Clarinette (2009) :: La première version jouée sur l'éponge originale
+        \citep{Marier2010}.  Les matériaux sonores étaient constitués
+        uniquement de sons de clarinette granulés.
+   - Struggling (2010) :: Cette version était jouée sur l'éponge 2.0
+        (identique à la version actuelle, mais sans boutons) et incorporait de
+        la synthèse par guide d'onde.  Pour la première fois, il était
+        possible de jouer des percussions sur l'éponge sans problèmes de
+        latence.
+   - Albino Butterfly (2011) :: C'est la première version à exploiter les
+        boutons.  Ils permettent de gérer jusqu'à quatre voix de polyphonie.
+        La distorsion et les filtres formantiques ont été intégrés.
+
+   /Clarinette/ devrait se fixer avant la fin de 2012, mais pour l'instant,
+   elle reste une pièce laboratoire grâce à laquelle il est possible
+   d'expérimenter avec l'éponge devant public.
+
+* Développements futurs
+** Boucleur de geste
+   Depuis les expérimentations de \citet{schaeffer_traite_1966} sur le sillon
+   fermé, le concept de la boucle audio est bien connu: l'idée est simplement
+   de répéter cycliquement un signal audio.
+
+   Le boucleur de geste est un système pratiquement identique sauf qu'il est
+   conçu pour boucler des signaux de contrôle plutôt que des signaux audio.
+
+   Cette nuance peut sembler anodine, mais si on y regarde de plus près, on
+   constatera que choisir de boucler le geste plutôt que le son a un impact
+   important.
+
+*** Concept
+    Pour boucler un geste, il faut boucler un ou plusieurs signaux de
+    contrôle.  Il peut s'agir de signaux obtenus directement des capteurs ou
+    encore de traits caractéristiques qui ont été préalablement extraits.  Les
+    signaux ainsi bouclés peuvent alors affecter les paramètres qui étaient
+    contrôlés avec l'éponge.  L'interprète, qui n'a plus à contrôler ces
+    paramètres, peut alors décider de créer une nouvelle voix de polyphonie en
+    se faisant accompagner par la boucle.
+
+    Un tel système n'offre pas d'avantages majeurs par rapport au boucleur de
+    son traditionnel.  Ce qui est différent, c'est qu'il devient aussi
+    possible de boucler un nombre limité de paramètres et de garder le
+    contrôle manuel d'autres paramètres.  Par exemple, si on enregistre une
+    boucle dans laquelle les paramètres /fréquence/, /amplitude/ et /amplitude
+    du vibrato/ varient, on peut boucler les deux premiers paramètres et
+    garder le contrôle manuel l'/amplitude du vibrato/.
+
+    Il devient aussi possible d'appliquer le concept du mode /trim/[fn:4: Le
+    mode /trim/ est un mode d'enregistrement d'automatisations qui additionne
+    le geste enregistré à la courbe qui est déjà là.] qu'on retrouve dans les
+    séquenceurs audionumériques comme ProTools ou Digital Performer.  En
+    effet, plutôt que de prendre le contrôle d'un paramètre, on peut le
+    boucler et venir l'altérer en temps réel.  De cette façon, on répète le
+    geste musical enregistré, mais on fait finement varier la boucle.
+*** Intégration avec l'interpolateur de préréglages
+    Le boucleur de geste en lui-même n'aide aucunement à établir un contrôle
+    musical.  Son utilité est à un autre niveau: il permet à un interprète de
+    gérer plusieurs voix de polyphonie avec une interface qui, à prime abord,
+    semble suggérer la monophonie.
+    
+    Mais si on veut se rapprocher du contrôle musical, on peut l'utiliser de
+    pair avec l'interpolateur de préréglage: plutôt que de boucler directement
+    les paramètres, on peut boucler des trajectoires dans l'espace
+    multidimensionnel.  De cette façon, une seule boucle affecte une multitude
+    de paramètres.  On peut alors utiliser le mode /trim/ pour venir modifier
+    en temps réel la trajectoire bouclée.
+
+*** Implémentation
+    Au moment de l'écriture de ce document, le boucleur de geste n'est pas
+    encore utilisable.  Les fonctionnalités de bases sont implémentées dans
+    les classes =Looper= et =FeatureLooper=, mais l'intégration avec
+    l'interpolateur de préréglages et l'éponge elle-même n'est pas encore
+    codée.
+
+** Projet de pièces finales
+  L'objectif est d'avoir quatre pièces pour éponge.  Le but est d'écrire des
+  oeuvres dont la structure est claire et perceptible dès une première écoute.
+  Le principe de tension-détente et la recherche d'un équilibre entre
+  redondance et originalité guideront l'écriture.
+
+  Les premières pièces pour éponge (/Cymbale/ et /Clarinette/) étaient plutôt
+  minimalistes et /ambient/.  Cela vient bien entendu d'un intérêt pour ce
+  genre, mais les contraintes techniques liées à l'utilisation d'une nouvelle
+  interface y étaient aussi pour beaucoup.  Maintenant que l'éponge a atteint une
+  certaine maturité et que les temps de latence ont été grandement réduits, il
+  est désormais plus facile de jouer avec des matériaux plus articulés et plus
+  dynamiques.  Les nouvelles pièces comporteront des sections rythmiques dans
+  lesquelles la pulsation sera l'ancrage du discours musical.
+
+# Explorer pour voir ce que implique de travailler avec un même mapping pour
+# plusieurs pièces vs travailler avec la même interface avec des mappings
+# différents.
+** Interface, /mappings/ et pièces : des modules assemblables
+   À écrire de la musique pour une nouvelle interface, on est forcé de se
+   demander si le /mapping/ utilisé est associé à l'interface ou à la pièce.
+   Lorsqu'un /mapping/ est associé à l'interface, on se retrouve avec un
+   instrument de musique numérique pour lequel on peut écrire plusieurs
+   pièces.  À l'inverse, si le /mapping/ est associé à une pièce, on obtient
+   une entité /pièce-mapping-interface/ monolithique.
+
+   Dans le travail à venir, ces deux avenues seront explorées: il y aura deux
+   pièces pour un même instrument et une autre pièce composée pour un
+   /mapping/ complètement différent.
+
+   De plus, une pièce pour deux éponges sera écrite.  En plus de permettre une
+   polyphonie plus évoluée, cette avenue permettra d'explorer les possibilités
+   d'interaction avec d'autres musiciens.
+
+   En résumé, il y aura quatre pièces:
+   
+   - Une version finale de /Clarinette/;
+   - Une pièce différente qui exploite le même /mapping/ que /Clarinette/;
+   - Une pièce qui exploite un /mapping/ radicalement différent;
+   - Un duo pour éponges dans lequel les deux /mappings/ seront différents.
+
+* Conclusion
+  Le travail fait au cours des dernières années a permis d'amener l'éponge à
+  un certain niveau de maturité.  L'interface est devenue à la fois plus
+  robuste et plus efficace, et la couche logicielle rend maintenant la
+  conception de /mappings/ complexes beaucoup facile et rapide.  Parallèlement
+  à l'évolution de l'éponge, il y a eu mon évolution personnelle: j'ai
+  énormément progressé comme interprète... comme épongiste.
+
+  Il y aura toujours quelque chose à améliorer sur l'éponge, mais il semble
+  que, pour la première fois depuis quatre ans, mon outil est enfin prêt et
+  que je peux maintenant composer et jouer de la musique.
+
+* Remerciements
+  Merci à Prof. Jean Piché, Annie Lalancette, Dr. Garth Paine et à Georges
+  Forget.  Nos échanges me nourrissent énormément.  Sans votre support,
+  l'éponge laverait encore de la vaisselle.
+
+
+\nocite{chion_laudio-vision_1990}
+\nocite{TrevorWishart}
+\nocite{Paine2002}
+\nocite{Paine2007}
+\nocite{smalley_spectromorphology_1997}
+\nocite{waisvisz_hands_1985}
+\nocite{Ryan1991}
+
+\bibliographystyle{francais}
+\bibliography{/home/marierm/Documents/mendeley/library}
