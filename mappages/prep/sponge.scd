@@ -1,0 +1,181 @@
+PR(\abstractProcess).v.clone({
+	~asPattern = {
+		~damper = Synth.tail(s, \damper, [
+			\out, ~damperBus.index,
+			\min, 100,
+			\max, 700,
+			\curve, -12
+		]).map(
+			\in, ~sponge[\fsr2].bus
+		);
+	};
+	~prep = {
+		// This damper synth conditions the fsr data to make it suitable for
+		// damping the rods.
+		Server.default.waitForBoot({
+			SynthDef(\damper, {
+				arg out=0, in=0, min=100, max=900, curve= -7;
+				Out.kr(out,  in.lincurve(min,max,1,0.0000001, curve); )
+			}).add;
+			~damperBus = Bus.control();
+			// open sponge port
+			~sponge = SpongeSLIP(baudRate:115200);
+			// activate the features needed
+			[
+				\acc1xHP, \acc1yHP, \acc1zHP,
+				\acc2xHP, \acc2yHP, \acc2zHP, 
+				\bend
+			].do{|i,j|
+				~sponge.activateFeature(i);
+			};
+			// create button bank
+			~butts = ButtonBank(ButtonInput.sponge(~sponge));
+			// Buttons 0 to 4 are used to make operations on corresponding voices.
+			// Modifier keys will change their behavior.
+			// Level 0 stops the voice.
+			// Level 1 starts the voice.
+			// Level 16 (bit 4) changes to "pitch control" mode.
+			// ~butts.modes[0].buttonFunctions[0..4].do{|i,j|
+			~butts.modes[0].buttonFunctions[4..1].do{|i,j|
+				i.functions_(
+					Dictionary.newFrom([
+						true, Array.newClear(32).putEach([0,1,2,4,16],[
+							{			// 0
+								\stop.post; j.postln;
+								BP( ("forms" ++ j).asSymbol ).stop(0);
+								BP(j).stop(0);
+								BP(("disto" ++ j).asSymbol).stop(0);
+							},
+							{ 			// 1
+								\play.post; j.postln;
+								BP(j).play(0,doReset: true);
+								BP( ("forms" ++ j).asSymbol ).play(0);
+								BP(("disto" ++ j).asSymbol).play(0);
+							},
+							{ 			// 2
+								\pbOn.post; j.postln;
+								BP(j).pitcher.map(\bend, ~sponge[\bend].bus);
+							},
+							{			// 4
+								// \freeze.post; j.postln;
+								// BP(("forms" ++ j).asSymbol).freezeMe;
+							},
+							{			// 16
+								("mode:" + (j + 1)).postln;
+								BP(\sponge).butts.mode_(j + 1);
+							}
+						]),
+						false, Array.newClear(32).putEach([2],[
+							{ 			// 2
+								\pbOff.post; j.postln;
+								BP(j).pitcher.set(\bend, 0);
+							},
+						])
+					]);
+				)
+			};
+
+			~butts.modes[0].buttonFunctions[0].do{|i,j|
+				i.functions_(
+					Dictionary.newFrom([
+						true, Array.newClear(32).putEach([0,1,2,4,16],[
+							{			// 0
+								\stop.post;
+								\feu.postln;
+								BP(\feu).stop(0);
+							},
+							{ 			// 1
+								\play.post; \feu.postln;
+								BP(\feu).play(0,doReset: true);
+							},
+							{ 			// 2
+								\pbOn.post; \feu.postln;
+							},
+							{			// 4
+								// \freeze.post; \clari.postln;
+								// BP(\clari).freezeMe;
+							},
+							{			// 16
+								("mode:" + "clari").postln;
+								BP(\sponge).butts.mode_(5);
+							}
+						]),
+						false, Array.newClear(32).putEach([2],[
+							{ 			// 2
+								\pbOff.post; \feu.postln;
+							},
+						])
+					]);
+				)
+			};
+
+			// buttons 5 to 9 are made modifier keys.
+			~butts.modes[0].buttonFunctions[9..5].do{|i,j| i.makeModifier(j)};
+			// In modes 1 to 5, buttons 5 to 9 sets the pitch of the corresponding
+			// voice.  
+			(1..4).do{|g,h|
+				// make new modes
+				~butts.newMode;
+				// buttons 5 to 9 are not really modifiers.  They set the level
+				// and then, the level is used to set the pitch.
+				~butts.modes[g].buttonFunctions[5..9].do{|i,j| i.makeModifier(j)};
+				// for each button(5 to 8), add function to level 0.
+				(9..5).do{|i,j|
+					~butts.modes[g].buttonFunctions[i].functions[true][0] = (
+						~butts.modes[g].buttonFunctions[i].functions[true][0]
+					).addFunc({
+						// This func offsets the pitch of the voice.
+						BP(h).pitchOsBus.set(~butts.modes[g].level);
+					});
+					~butts.modes[g].buttonFunctions[i].functions[false][0] = (
+						~butts.modes[g].buttonFunctions[i].functions[false][0]
+					).addFunc({
+						// do it when button is released too
+						BP(h).pitchOsBus.set(~butts.modes[g].level);
+					});
+				};
+				// button 0 switch back to mode 0 (any level works).
+				~butts.modes[g].buttonFunctions[0].functions[true] =
+				Array.fill(32, {{
+					BP(\sponge).butts.mode_(0);
+					("mode:" + 0).postln; 
+					BP(\sponge).butts.mode.level_(0);
+				}});
+				
+				// button 4 turns pitch bend on (any level works).
+				~butts.modes[g].buttonFunctions[4].functions[true] =
+				Array.fill(32, {{
+					\pbOn.post; h.postln;
+					BP(h).pitcher.map(\bend, ~sponge[\bend].bus);
+				}});
+
+				~butts.modes[g].buttonFunctions[4].functions[false] =
+				Array.fill(32, {{
+					\pbOff.post; h.postln;
+					BP(h).pitcher.set(\bend, 0);
+				}});
+			};
+
+			// Clarinet mode
+			~butts.newMode;//Clari mode
+			~butts.modes[5].buttonFunctions[0].functions[true] =
+			Array.fill(32, {{
+				BP(\sponge).butts.mode_(0);
+				("mode:" + 0).postln; 
+				BP(\sponge).butts.mode.level_(0);
+			}});
+
+		});
+	};
+
+	~freeCleanup = {
+		{ ~sponge.close; }.try;
+		~damper.free;
+		~damperBus.free;
+	};
+}) => BP(\sponge);
+
+
+
+// BP(\sponge).free
+
