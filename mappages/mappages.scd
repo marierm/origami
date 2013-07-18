@@ -21,16 +21,17 @@ BP.freeAll;
     1.wait;
     4.do({|i|
         PR(\fm).chuck(BP(i), parms:(
-			// path: ("fm7_2013-07-14_" ++ i ++ ".pri").resolveRelative,
-			path: Date.getDate.format("fm7_%Y-%m-%d_" ++ i ++ ".pri").resolveRelative,
+			path: ("fm7_2013-07-15_" ++ i ++ ".pri").resolveRelative,
+			// path: Date.getDate.format("fm7_%Y-%m-%d_" ++ i ++ ".pri").resolveRelative,
 			notes: ([ \en1, \en2, \bn2].keynum.mirror2.clump(3)).flat
 		));
     });
 	("prep/feu.scd").loadRelative;
 	1.wait;
 	PR(\granule).chuck(BP(\feu), parms:(
-		interpolatorPath: Date.getDate.format(
-			"feu_%Y-%m-%d.pri").resolveRelative,
+		// interpolatorPath: Date.getDate.format(
+		// 	"feu_%Y-%m-%d.pri").resolveRelative,
+		path: ("feu_2013-07-15.pri").resolveRelative,
 		audioFilePath: "samples/feuHuards.aiff".resolveRelative
 	));
 	5.wait;
