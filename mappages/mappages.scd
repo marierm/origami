@@ -1,7 +1,13 @@
 // Fix removepoint; Ajouter contrôle de seuil et de durée dans l'interpolateur
 // feu.  Seuil sur capteur de pression???
 
-Coucou
+// Instructions git pour Clara:
+// Si les fichiers locaux ne sont pas changés:
+// git pull
+// 
+// Si les fichiers locaux ont changé, il faut exécuté:
+// git reset --hard
+// avant de faire git pull
 
 BP.freeAll;
 (
