@@ -32,6 +32,9 @@ PR(\withSponge).clone({					// withInterpolator
 		});
 		1.asPattern;
 	});
+	~freezeMe = {
+		6.do({ |i| ~interpolator.disconnect(i);	});
+	};
 	~stopCleanupList = ~stopCleanupList.deepCopy.addFunc({
 		6.do({ |i|
 			try { ~interpolator.disconnect(i) };
@@ -83,7 +86,6 @@ PR(\withInterpolator).clone({ 			// withAmp
 PR(\withAmp).clone({ 					// fm
 	~notes = ([ \en1, \en2, \bn2].keynum.mirror2.clump(3)).flat;
 	~numNotes = 6;
-
 	~prepList = ~prepList.deepCopy.addFunc({
 		SynthDef(\fm, {
 			arg out = 0, gate=1, att=0.3;
@@ -170,9 +172,10 @@ PR(\withAmp).clone({ 					// fm
 		~fm = Synth.after(~pitcher, \fm, [
 			// \out, ~bus.index,
 			\out, 0
+			// \amp, 0.1
 		]);
 
-		~fm.map( \amps, ~ampBus );
+		~fm.map( \amps, ~ampBus);
 		
 		// Map output of pitcher to fm freqs.
 		~fm.map( *

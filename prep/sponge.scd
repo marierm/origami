@@ -63,8 +63,8 @@ PR(\abstractProcess).v.clone({
 								BP(j).pitcher.map(\bend, ~sponge[\bend].bus);
 							},
 							{			// 4
-								// \freeze.post; j.postln;
-								// BP(("forms" ++ j).asSymbol).freezeMe;
+								\freeze.post; j.postln;
+								BP(j).freezeMe;
 							},
 							{			// 16
 								("mode:" + (j + 1)).postln;
@@ -144,7 +144,6 @@ PR(\abstractProcess).v.clone({
 						);
 					});
 				};
-				/*
 				// button 5 switch back to mode 0 (any level works).
 				~butts.modes[g].buttonFunctions[5].functions[true] =
 				Array.fill(32, {{
@@ -165,7 +164,6 @@ PR(\abstractProcess).v.clone({
 					\pbOff.post; h.postln;
 					BP(h).pitcher.set(\bend, 0);
 				}});
-				*/
 			};
 
 			/*
