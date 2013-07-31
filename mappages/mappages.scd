@@ -36,8 +36,10 @@
 	~val = ~spec.map(~slider.value);
 });
 ~win.onClose_({|w|
-	("echo" + ~val + ">" +
-	Date.getDate.format("resultats/%Y-%m-%d_%H-%M-%S_sens")).unixCmd;
+	(
+		"echo" + ~val + ">" +
+		Date.getDate.format("resultats/%Y-%m-%d_%H-%M-%S_sens")
+	).unixCmd;
 	BP.freeAll;
 });
 )
