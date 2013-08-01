@@ -20,7 +20,7 @@
     "prep/fm.scd".loadRelative;
 	s.sync;
 	PR(\fm).chuck(BP(0), parms:(
-		interpolatorPath: ("fm7_2013-07-15_" ++ 0 ++ ".pri").resolveRelative,
+		interpolatorPath: ("exp_2013-08-01.pri").resolveRelative,
 		notes: ([ \en2, \en3, \bn3].keynum.mirror2.clump(3)).flat
 	));
 	s.sync;
@@ -61,7 +61,7 @@
     "prep/fm.scd".loadRelative;
 	s.sync;
 	PR(\fm).chuck(BP(0), parms:(
-		interpolatorPath: ("fm7_2013-07-15_" ++ 0 ++ ".pri").resolveRelative,
+		interpolatorPath: ("exp_2013-08-01.pri").resolveRelative,
 		notes: ([ \en2, \en3, \bn3].keynum.mirror2.clump(3)).flat
 	));
 	s.sync;
@@ -91,6 +91,11 @@
 });
 )
 
+( // Save interpolator 1 (for experiment).
+BP(0).interpolator.newSave(
+	Date.getDate.format("exp_2013-08-01.pri").resolveRelative
+);
+)
 
 ( // Save all four interpolators.
 4.do({|i|
