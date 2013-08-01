@@ -49,7 +49,7 @@ PR(\withInterpolator).clone({ 			// withAmp
 			arg out=0, in = #[0,0,0,0,0,0];
 			Out.kr(
 				out,
-				EnvFollow.kr(in * 0.005, \decayCoef.kr(0.99))
+				EnvFollow.kr(in * 0.005, \decayCoef.kr(0.999))
 			);
 		}).add;
 		~ampBus = Bus.control(s, 6);
@@ -125,7 +125,11 @@ PR(\withAmp).clone({ 					// fm
 			offset = NamedControl.kr(\offset, 0);
 			bend = NamedControl.kr(\bend, 0);
 			bend = bend.linlin(-pi, pi, bendRange * -1, bendRange); 
-			interpol = NamedControl.kr(\interpol, [0,0,0,0,0,0]);
+			interpol = NamedControl.kr(
+				\interpol, [0,0,0,0,0,0]
+			) * NamedControl.kr(
+				\coefImpactHauteur, 1.0 // adjust the impact of interpolator (for experiment);
+			);
 
 			freqs = (base + offset + bend + interpol).midicps;
 			ReplaceOut.kr(out, freqs);

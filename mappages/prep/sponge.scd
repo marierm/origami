@@ -1,4 +1,10 @@
 PR(\abstractProcess).v.clone({
+	// This table is used to invert the bit order of the buttons.  This is
+	// useful when controling pitch with the buttons.
+	~numBits = 5;
+	~conversionTable = (0..(2.pow(~numBits) - 1)).collect({|i|
+		i.asInteger.asBinaryDigits(~numBits).reverse.convertDigits(2)
+	});
 	~asPattern = {
 		~damper = Synth.tail(s, \damper, [
 			\out, ~damperBus.index,
@@ -116,46 +122,53 @@ PR(\abstractProcess).v.clone({
 			(1..4).do{|g,h|
 				// make new modes
 				~butts.newMode;
-				// buttons 5 to 9 are not really modifiers.  They set the level
+				// buttons 0 to 4 are not really modifiers.  They set the level
 				// and then, the level is used to set the pitch.
-				~butts.modes[g].buttonFunctions[5..9].do{|i,j| i.makeModifier(j)};
-				// for each button(5 to 8), add function to level 0.
-				(9..5).do{|i,j|
+				~butts.modes[g].buttonFunctions[0..4].do{|i,j| i.makeModifier(j)};
+				// for each button(0 to 4), add function to level 0.
+				(0..4).do{|i,j|
 					~butts.modes[g].buttonFunctions[i].functions[true][0] = (
 						~butts.modes[g].buttonFunctions[i].functions[true][0]
 					).addFunc({
 						// This func offsets the pitch of the voice.
-						BP(h).pitchOsBus.set(~butts.modes[g].level);
+						BP(h).pitchOsBus.set(
+							~conversionTable[ ~butts.modes[g].level ]
+						);
 					});
 					~butts.modes[g].buttonFunctions[i].functions[false][0] = (
 						~butts.modes[g].buttonFunctions[i].functions[false][0]
 					).addFunc({
 						// do it when button is released too
-						BP(h).pitchOsBus.set(~butts.modes[g].level);
+						BP(h).pitchOsBus.set(
+							~conversionTable[ ~butts.modes[g].level ]
+						);
 					});
 				};
-				// button 0 switch back to mode 0 (any level works).
-				~butts.modes[g].buttonFunctions[0].functions[true] =
+				/*
+				// button 5 switch back to mode 0 (any level works).
+				~butts.modes[g].buttonFunctions[5].functions[true] =
 				Array.fill(32, {{
 					BP(\sponge).butts.mode_(0);
 					("mode:" + 0).postln; 
 					BP(\sponge).butts.mode.level_(0);
 				}});
 				
-				// button 4 turns pitch bend on (any level works).
-				~butts.modes[g].buttonFunctions[4].functions[true] =
+				// button 9 turns pitch bend on (any level works).
+				~butts.modes[g].buttonFunctions[9].functions[true] =
 				Array.fill(32, {{
 					\pbOn.post; h.postln;
 					BP(h).pitcher.map(\bend, ~sponge[\bend].bus);
 				}});
 
-				~butts.modes[g].buttonFunctions[4].functions[false] =
+				~butts.modes[g].buttonFunctions[9].functions[false] =
 				Array.fill(32, {{
 					\pbOff.post; h.postln;
 					BP(h).pitcher.set(\bend, 0);
 				}});
+				*/
 			};
 
+			/*
 			// Clarinet mode
 			~butts.newMode;//Clari mode
 			~butts.modes[5].buttonFunctions[0].functions[true] =
@@ -164,7 +177,7 @@ PR(\abstractProcess).v.clone({
 				("mode:" + 0).postln; 
 				BP(\sponge).butts.mode.level_(0);
 			}});
-
+			*/
 		});
 	};
 
