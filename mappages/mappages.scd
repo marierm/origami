@@ -14,17 +14,16 @@
 {
     s.bootSync;
     "prep/sponge.scd".loadRelative;
-    s.sync;
+	2.wait;
     BP(\sponge).play;
-	s.sync;
     "prep/fm.scd".loadRelative;
-	s.sync;
+	4.wait;
 	PR(\fm).chuck(BP(0), parms:(
 		interpolatorPath: ("exp_2013-08-01.pri").resolveRelative,
 		notes: [\en3, \en3, \en1, \en2, \bn3, \en4].keynum,
 		numNotes: 2
 	));
-	s.sync;
+	2.wait;
 	BP(0).play;
 	BP(\sponge).butts.mode_(1);
 	\ready.postln;
@@ -34,12 +33,15 @@
 		~sliderHaut.valueAction_(0);
 	}.defer;
 }.fork;
-~resPath = "resultats".resolveRelative +/+ Date.getDate.format("res-sujet_%Y-%m-%d_%H-%M-%S");
+~resFile = CSVFileWriter(
+	"resultats".resolveRelative +/+ Date.getDate.format("res-sujet_%Y-%m-%d_%H-%M-%S")
+);
+~resList = List();
+(
 ~win = Window(
 	"Contrôles", 
-	Rect.aboutPoint( Window.screenBounds.center, 300, 20)
-);
-~win.layout_(
+	Rect.aboutPoint( Window.screenBounds.center, 400, 20)
+).layout_(
 	HLayout(
 	VLayout(
 		HLayout(
@@ -51,9 +53,20 @@
 			~noteHaut = TextField()
 		)
 	),
-	Button()
+		Button().states_([["Prout!"]]).minHeight_(40).action_({
+			~resFile.writeLine(
+				[
+					Date.getDate.format("%Y-%m-%d %H:%M:%S"),
+					~valSens,
+					~noteSens,
+					~valHaut,
+					~valSens
+				]
+			);
+		})
 	)
-);
+).front;
+)
 
 ~spec = ControlSpec(0.7,0.999999,-10);
 ~valSens = ~spec.map(~sliderSens.value);
@@ -67,12 +80,17 @@
 	~valHaut = ~sliderHaut.value;
 });
 ~win.onClose_({|w|
-	("Sensibilité: " + ~valSens).postln;
-	("Coef hauteur: " + ~valHaut).postln;
-	(
-		"echo \"" + ~valSens ++ "\n" ++ ~valHaut + "\" >" + ~resPath
-	).unixCmd;
-	BP.freeAll;
+	~resFile.writeLine(
+		[
+			Date.getDate.format("%Y-%m-%d %H:%M:%S"),
+			~valSens,
+			~noteSens,
+			~valHaut,
+			~valSens
+		]
+	);
+	~resFile.close;
+	BP(0).stop;
 });
 )
 
