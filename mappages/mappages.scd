@@ -21,73 +21,58 @@
 	s.sync;
 	PR(\fm).chuck(BP(0), parms:(
 		interpolatorPath: ("exp_2013-08-01.pri").resolveRelative,
-		notes: ([ \en2, \en3, \bn3].keynum.mirror2.clump(3)).flat
+		notes: [\en3, \en3, \en1, \en2, \bn3, \en4].keynum,
+		numNotes: 2
 	));
 	s.sync;
 	BP(0).play;
 	BP(\sponge).butts.mode_(1);
 	\ready.postln;
 	~win.front;
-	{~slider.valueAction_(0.5);}.defer;
+	{
+		~sliderSens.valueAction_(0);
+		~sliderHaut.valueAction_(0);
+	}.defer;
 }.fork;
-~resPath = "resultats".resolveRelative +/+ Date.getDate.format("%Y-%m-%d_%H-%M-%S_sens");
+~resPath = "resultats".resolveRelative +/+ Date.getDate.format("res-sujet_%Y-%m-%d_%H-%M-%S");
 ~win = Window(
-	"Sensibilité",
-	Rect.aboutPoint( Window.screenBounds.center, 300, 10)
+	"Contrôles", 
+	Rect.aboutPoint( Window.screenBounds.center, 300, 20)
 );
-~spec = ControlSpec(0.7,0.999999,-10);
-~slider = Slider(~win, 600@20);
-~val = ~spec.map(~slider.value);
-~slider.action_({|sl|
-	BP(0).ampExtractor.set(\decayCoef, ~spec.map(sl.value));
-	~val = ~spec.map(~slider.value);
-});
-~win.onClose_({|w|
-	("Sensibilité:" + ~val).postln;
-	BP.freeAll;
-	(
-		"echo" + ~val + ">" + ~resPath
-	).unixCmd;
-});
-)
+~win.layout_(
+	HLayout(
+	VLayout(
+		HLayout(
+			~sliderSens = Slider().orientation_(\horizontal).minWidth_(600),
+			~noteSens = TextField()
+		),
+		HLayout(
+			~sliderHaut = Slider().orientation_(\horizontal).minWidth_(600),
+			~noteHaut = TextField()
+		)
+	),
+	Button()
+	)
+);
 
-(
-{
-    s.bootSync;
-    "prep/sponge.scd".loadRelative;
-    s.sync;
-    BP(\sponge).play;
-	s.sync;
-    "prep/fm.scd".loadRelative;
-	s.sync;
-	PR(\fm).chuck(BP(0), parms:(
-		interpolatorPath: ("exp_2013-08-01.pri").resolveRelative,
-		notes: ([ \en2, \en3, \bn3].keynum.mirror2.clump(3)).flat
-	));
-	s.sync;
-	BP(0).play;
-	BP(\sponge).butts.mode_(1);
-	\ready.postln;
-	~win.front;
-	{~slider.valueAction_(0.5);}.defer;
-}.fork;
-~resPath = "resultats".resolveRelative +/+ Date.getDate.format("%Y-%m-%d_%H-%M-%S_hauteur");
-~win = Window(
-	"Contrôle des hauteurs", 
-	Rect.aboutPoint( Window.screenBounds.center, 300, 10)
-);
-~slider = Slider(~win, 600@20);
-~val = ~slider.value;
-~slider.action_({|sl|
+~spec = ControlSpec(0.7,0.999999,-10);
+~valSens = ~spec.map(~sliderSens.value);
+~valHaut = ~sliderHaut.value;
+~sliderSens.action_({|sl|
+	BP(0).ampExtractor.set(\decayCoef, ~spec.map(sl.value));
+	~valSens = ~spec.map(~sliderSens.value);
+});
+~sliderHaut.action_({|sl|
 	BP(0).pitcher.set(\coefImpactHauteur, sl.value);
-	~val = ~slider.value;
+	~valHaut = ~sliderHaut.value;
 });
 ~win.onClose_({|w|
-	("Coef hauteur: " + ~val).postln;
-	BP.freeAll;
+	("Sensibilité: " + ~valSens).postln;
+	("Coef hauteur: " + ~valHaut).postln;
 	(
-		"echo" + ~val + ">" + ~resPath
+		"echo \"" + ~valSens ++ "\n" ++ ~valHaut + "\" >" + ~resPath
 	).unixCmd;
+	BP.freeAll;
 });
 )
 
@@ -112,4 +97,3 @@ BP(0).interpolator.gui;
 BP(\feu).interpolator.gui;
 ChuckableBrowser()
 BP(\sponge).sponge.gui;
-

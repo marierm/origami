@@ -82,6 +82,7 @@ PR(\withInterpolator).clone({ 			// withAmp
 
 PR(\withAmp).clone({ 					// fm
 	~notes = ([ \en1, \en2, \bn2].keynum.mirror2.clump(3)).flat;
+	~numNotes = 6;
 
 	~prepList = ~prepList.deepCopy.addFunc({
 		SynthDef(\fm, {
@@ -103,11 +104,11 @@ PR(\withAmp).clone({ 					// fm
 			sig = sig * \amps.kr( 0.1!6 );
 			Out.ar(
 				out,
-				Splay.ar(
-					sig * EnvGen.kr(
+				Splay.arFill( ~numNotes, { |i|
+					sig[i] * EnvGen.kr(
 						Env.asr(att,0.1),gate, doneAction:2
 					)
-				)
+				})				
 			);
 		}).add;
 
@@ -169,10 +170,9 @@ PR(\withAmp).clone({ 					// fm
 		~fm = Synth.after(~pitcher, \fm, [
 			// \out, ~bus.index,
 			\out, 0
-			// \amp, 0.1
 		]);
 
-		~fm.map( \amps, ~ampBus);
+		~fm.map( \amps, ~ampBus );
 		
 		// Map output of pitcher to fm freqs.
 		~fm.map( *
