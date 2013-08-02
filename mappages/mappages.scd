@@ -3,7 +3,7 @@
 // Instructions git pour Clara:
 // Si les fichiers locaux ne sont pas changés:
 // git pull
-// 
+//
 // Si les fichiers locaux ont changé, il faut exécuté:
 // git reset --hard
 // avant de faire git pull
@@ -37,9 +37,8 @@
 	"resultats".resolveRelative +/+ Date.getDate.format("res-sujet_%Y-%m-%d_%H-%M-%S")
 );
 ~resList = List();
-(
 ~win = Window(
-	"Contrôles", 
+	"Contrôles",
 	Rect.aboutPoint( Window.screenBounds.center, 400, 20)
 ).layout_(
 	HLayout(
@@ -58,15 +57,14 @@
 				[
 					Date.getDate.format("%Y-%m-%d %H:%M:%S"),
 					~valSens,
-					~noteSens,
+					~noteSens.value,
 					~valHaut,
-					~valSens
+					~noteHaut.value
 				]
 			);
 		})
 	)
-).front;
-)
+);
 
 ~spec = ControlSpec(0.7,0.999999,-10);
 ~valSens = ~spec.map(~sliderSens.value);
@@ -84,9 +82,9 @@
 		[
 			Date.getDate.format("%Y-%m-%d %H:%M:%S"),
 			~valSens,
-			~noteSens,
+			~noteSens.value,
 			~valHaut,
-			~valSens
+			~noteHaut.value
 		]
 	);
 	~resFile.close;
