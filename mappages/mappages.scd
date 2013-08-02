@@ -82,9 +82,9 @@
 		[
 			Date.getDate.format("%Y-%m-%d %H:%M:%S"),
 			~valSens,
-			~noteSens.value,
+			"fermeture",
 			~valHaut,
-			~noteHaut.value
+			"fermeture"
 		]
 	);
 	~resFile.close;
