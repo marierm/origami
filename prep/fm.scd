@@ -74,7 +74,9 @@ PR(\withInterpolator).clone({ 			// withAmp
 	});
 	~stopCleanupList = ~stopCleanupList.deepCopy.addFunc({
 		// wait for ~relTime seconds before freeing ~ampExtractor.
-		~server.sendBundle(~relTime, ~ampExtractor.freeMsg );
+		{
+			~server.sendBundle(~relTime, ~ampExtractor.freeMsg );
+		}.try; //try block avoids "freeMsg not understood";
 	});
 	~freeCleanupList = ~freeCleanupList.deepCopy.addFunc({
 		~ampExtractor.free;
