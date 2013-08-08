@@ -36,13 +36,13 @@ PR(\abstractProcess).v.clone({
 			};
 			// create button bank
 			~butts = ButtonBank(ButtonInput.sponge(~sponge));
-			// Buttons 0 to 4 are used to make operations on corresponding voices.
+			// Buttons 9 to 5 are used to make operations on corresponding voices.
 			// Modifier keys will change their behavior.
 			// Level 0 stops the voice.
 			// Level 1 starts the voice.
 			// Level 16 (bit 4) changes to "pitch control" mode.
 			// ~butts.modes[0].buttonFunctions[0..4].do{|i,j|
-			~butts.modes[0].buttonFunctions[4..1].do{|i,j|
+			~butts.modes[0].buttonFunctions[9..5].do{|i,j|
 				i.functions_(
 					Dictionary.newFrom([
 						true, Array.newClear(32).putEach([0,1,2,4,16],[
@@ -81,7 +81,7 @@ PR(\abstractProcess).v.clone({
 				)
 			};
 
-			~butts.modes[0].buttonFunctions[0].do{|i,j|
+			~butts.modes[0].buttonFunctions[5].do{|i,j|
 				i.functions_(
 					Dictionary.newFrom([
 						true, Array.newClear(32).putEach([0,1,2,4,16],[
@@ -115,8 +115,8 @@ PR(\abstractProcess).v.clone({
 				)
 			};
 
-			// buttons 5 to 9 are made modifier keys.
-			~butts.modes[0].buttonFunctions[9..5].do{|i,j| i.makeModifier(j)};
+			// buttons 0 to 5 are made modifier keys.
+			~butts.modes[0].buttonFunctions[4..0].do{|i,j| i.makeModifier(j)};
 			// In modes 1 to 5, buttons 5 to 9 sets the pitch of the corresponding
 			// voice.  
 			(1..4).do{|g,h|
