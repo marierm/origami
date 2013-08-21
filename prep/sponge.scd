@@ -6,24 +6,11 @@ PR(\abstractProcess).v.clone({
 		i.asInteger.asBinaryDigits(~numBits).reverse.convertDigits(2)
 	});
 	~asPattern = {
-		~damper = Synth.tail(s, \damper, [
-			\out, ~damperBus.index,
-			\min, 100,
-			\max, 700,
-			\curve, -12
-		]).map(
-			\in, ~sponge[\fsr2].bus
-		);
 	};
 	~prep = {
 		// This damper synth conditions the fsr data to make it suitable for
 		// damping the rods.
 		Server.default.waitForBoot({
-			SynthDef(\damper, {
-				arg out=0, in=0, min=100, max=900, curve= -7;
-				Out.kr(out,  in.lincurve(min,max,1,0.0000001, curve); )
-			}).add;
-			~damperBus = Bus.control();
 			// open sponge port
 			~sponge = SpongeSLIP(baudRate:115200);
 			// activate the features needed
@@ -144,6 +131,9 @@ PR(\abstractProcess).v.clone({
 						);
 					});
 				};
+
+				// ~butts.modes[g].buttonFunctions[0..4].do{|i,j| i.makeModifier(j)};
+
 				// button 5 switch back to mode 0 (any level works).
 				~butts.modes[g].buttonFunctions[5].functions[true] =
 				Array.fill(32, {{
@@ -152,18 +142,33 @@ PR(\abstractProcess).v.clone({
 					BP(\sponge).butts.mode.level_(0);
 				}});
 				
-				// button 9 turns pitch bend on (any level works).
-				~butts.modes[g].buttonFunctions[9].functions[true] =
+				// button 6 turns pitch bend on (any level works).
+				~butts.modes[g].buttonFunctions[6].functions[true] =
 				Array.fill(32, {{
 					\pbOn.post; h.postln;
 					BP(h).pitcher.map(\bend, ~sponge[\bend].bus);
 				}});
 
-				~butts.modes[g].buttonFunctions[9].functions[false] =
+				~butts.modes[g].buttonFunctions[6].functions[false] =
 				Array.fill(32, {{
 					\pbOff.post; h.postln;
 					BP(h).pitcher.set(\bend, 0);
 				}});
+
+				// button 8 stops the voice (any level works).
+				~butts.modes[g].buttonFunctions[8].functions[true] =
+				Array.fill(32, {{
+					\stop.post; h.postln;
+					BP(h).stop;
+				}});
+
+				// button 9 plays the voice (any level works).
+				~butts.modes[g].buttonFunctions[9].functions[true] =
+				Array.fill(32, {{
+					\play.post; h.postln;
+					BP(h).play(0,doReset: true);
+				}});
+
 			};
 
 			/*

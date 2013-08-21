@@ -2,7 +2,8 @@
 // -> withSponge
 //    -> withInterpolator
 //       -> withAmp
-//          -> fm
+//          -> withDamp
+//             -> fm
 //          -> granule
 
 PR(\abstractProcess).clone({   // withLists
@@ -82,6 +83,50 @@ PR(\withInterpolator).clone({ 			// withAmp
 	~freeCleanupList = ~freeCleanupList.deepCopy.addFunc({
 		~ampExtractor.free;
 		~ampBus.free;
-		~pargroup.free;
+		~group.free;
 	});
 }).chuck(PR(\withAmp));
+
+PR(\withAmp).clone({ 			// withDamp
+	~damperCurve = 4;
+	~damperMin = 100;
+	~damperMax = 900;
+	~prepList = ~prepList.deepCopy.addFunc({
+		~damperBus = Bus.control();
+		SynthDef(\damper, {
+			arg out=0, min=100, max=900, curve=4;
+			Out.kr(
+				out,
+				\inA.kr(0).max(\inB.kr(0)).lincurve(
+					min,max,0.99999,0.7, curve
+				);
+			)
+		}).add;
+		~damperInA = ~sponge[\fsr1].bus;
+		~damperInB = ~sponge[\fsr2].bus;
+	});
+
+	~asPatternList = ~asPatternList.deepCopy.addFunc({
+		~damper = Synth.after(~ampExtractor, \damper, [
+			\out, ~damperBus.index,
+			\min, ~damperMin,
+			\max, ~damperMax,
+			\curve, ~damperCurve
+		]).map(
+			\inA, ~damperInA,
+			\inB, ~damperInB
+		);
+		~ampExtractor.map(\decayCoef, ~damperBus);
+		1.asPattern;
+	});
+
+	~stopCleanupList = ~stopCleanupList.deepCopy.addFunc({
+		// wait for ~relTime seconds before freeing
+		{
+			~server.sendBundle(~relTime, ~damper.freeMsg );
+		}.try; //try block avoids "freeMsg not understood";
+	});
+	~freeCleanupList = ~freeCleanupList.deepCopy.addFunc({
+		~damperBus.free;
+	});
+}).chuck(PR(\withDamp));

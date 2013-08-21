@@ -3,7 +3,11 @@
 // Ajouter pression -> damping.
 // Ajouter des "done signal".
 // Changer code de sponge.scd (hériter des autres dans fm).
+// éviter les doublons de granulation.
+
+// Permettre d'enregistrer les gestes du partenaire?
 BP.freeAll;
+(
 {
     s.bootSync;
     "prep/sponge.scd".loadRelative;
@@ -14,7 +18,7 @@ BP.freeAll;
 	s.sync;
     4.do({|i|
         PR(\fm).chuck(BP(i), parms:(
-			interpolatorPath: ("presets/fm"++i++"*").pathMatch.sort.last.resolveRelative,
+			interpolatorPath: ("presets/fm"++i++"*").resolveRelative.pathMatch.sort.last.resolveRelative,
 			notes: ([ \en1, \en2, \en3].keynum.mirror2.clump(3)).flat + (i * 12),
 			numNotes: 2
 		));
@@ -24,7 +28,7 @@ BP.freeAll;
 	("prep/feu.scd").loadRelative;
 	s.sync;
 	PR(\granule).chuck(BP(\feu), parms:(
-		interpolatorPath: ("presets/feu0*").pathMatch.sort.last.resolveRelative,
+		interpolatorPath: ("presets/feu0*").resolveRelative.pathMatch.sort.last.resolveRelative,
 		// interpolatorPath: ("feu_2013-07-15.pri").resolveRelative,
 		// Date.getDate.format(
 		// 	"feu_%Y-%m-%d.pri").resolveRelative,
@@ -47,9 +51,13 @@ BP(\feu).interpolator.newSave(
 )
 
 
-BP(1).interpolator.gui;
+BP(0).damper.set(\max, 900);
+BP(0).damper.set(\min, 100);
+BP(0).damper.set(\curve, 5);
+
+
+.interpolator.gui;
 BP(2).notes = BP(2).notes -24
 BP(\feu).interpolator.gui;
 ChuckableBrowser()
 BP(\sponge).sponge.gui;
-

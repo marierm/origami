@@ -2,9 +2,10 @@
 // -> withSponge
 //    -> withInterpolator
 //       -> withAmp
-//          -> fm
+//          -> withDamp
+//             -> fm
 
-PR(\withAmp).clone({ 					// fm
+PR(\withDamp).clone({ 					// fm
 	~notes = ([ \en1, \en2, \bn2].keynum.mirror2.clump(3)).flat;
 	~numNotes = 6;
 	~prepList = ~prepList.deepCopy.addFunc({
@@ -63,7 +64,7 @@ PR(\withAmp).clone({ 					// fm
 		~freqBuses = Bus.control(s, ~notes.size);
 		~bus = Bus.audio(s, 2);
 		~pargroup = ParGroup.tail();
-		~damp = BP(\sponge).damperBus.asMap;
+		// ~damp = BP(\sponge).damperBus.asMap;
 
 		// This stores out the index of the \interpol control input.
 		// Is there a better way to do this?
