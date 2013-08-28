@@ -68,43 +68,28 @@ PR(\abstractProcess).v.clone({
 				)
 			};
 
-			~butts.modes[0].buttonFunctions[5].do{|i,j|
-				i.functions_(
-					Dictionary.newFrom([
-						1, Array.newClear(32).putEach([0,1,2,4,16],[
-							{			// 0
-								\stop.post;
-								\feu.postln;
-								BP(\feu).stop(0);
-							},
-							{ 			// 1
-								\play.post; \feu.postln;
-								BP(\feu).play(0,doReset: true);
-							},
-							{ 			// 2
-								\pbOn.post; \feu.postln;
-							},
-							{			// 4
-								// \freeze.post; \clari.postln;
-								// BP(\clari).freezeMe;
-							},
-							{			// 16
-								("mode:" + "clari").postln;
-								BP(\sponge).butts.mode_(5);
-							}
-						]),
-						0, Array.newClear(32).putEach([2],[
-							{ 			// 2
-								\pbOff.post; \feu.postln;
-							},
-						])
-					]);
-				)
-			};
+			~butts.modes[0].addFunc(
+				button:5,
+				function:{
+					\stop.post;	\feu.postln;
+					BP(\feu).stop(0);
+				},
+				levels: [0],
+				buttState: 1
+			);
+			~butts.modes[0].addFunc(
+				button:5,
+				function:{
+					\play.post; \feu.postln;
+					BP(\feu).play(0,doReset: true);
+				},
+				levels: [1],
+				buttState: 1
+			);
 
 			// buttons 0 to 5 are made modifier keys.
 			~butts.modes[0].buttonFunctions[4..0].do{|i,j| i.makeModifier(j)};
-			// In modes 1 to 5, buttons 5 to 9 sets the pitch of the corresponding
+			// In modes 1 to 4, buttons 0 to 4 sets the pitch of the corresponding
 			// voice.  
 			(1..4).do{|g,h|
 				// make new modes
