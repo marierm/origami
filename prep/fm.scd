@@ -8,6 +8,21 @@
 PR(\withDamp).clone({ 					// fm
 	~notes = ([ \en1, \en2, \bn2].keynum.mirror2.clump(3)).flat;
 	~numNotes = 6;
+	~octVa = {
+		~notes = ~notes + 12;
+		~pitcher.set(\base, ~notes);
+	};
+	~octVb = {
+		~notes = ~notes - 12;
+		~pitcher.set(\base, ~notes);
+	};
+	~octTmp = { |oct|
+		~pitcher.set(\base, ~notes + (12 * oct));
+	};
+	~octReset = {
+		~pitcher.set(\base, ~notes);
+	};
+
 	~prepList = ~prepList.deepCopy.addFunc({
 		SynthDef(\fm, {
 			arg out = 0, gate=1, att=0.3;

@@ -32,7 +32,7 @@ PR(\abstractProcess).v.clone({
 			~butts.modes[0].buttonFunctions[9..5].do{|i,j|
 				i.functions_(
 					Dictionary.newFrom([
-						1, Array.newClear(32).putEach([0,1,2,4,16],[
+						1, Array.newClear(32).putEach([0,1,2,4],[
 							{			// 0
 								\stop.post; j.postln;
 								BP( ("forms" ++ j).asSymbol ).stop(0);
@@ -52,22 +52,21 @@ PR(\abstractProcess).v.clone({
 							{			// 4
 								\freeze.post; j.postln;
 								BP(j).freezeMe;
-							},
-							{			// 16
-								("mode:" + (j + 1)).postln;
-								BP(\sponge).butts.mode_(j + 1);
 							}
 						]),
-						0, Array.newClear(32).putEach([2],[
+						0, Array.newClear(32).putEach([2, 16],[
 							{ 			// 2
 								\pbOff.post; j.postln;
 								BP(j).pitcher.set(\bend, 0);
+							},
+							{
+								("mode:" + (j + 1)).postln;
+								BP(\sponge).butts.mode_(j + 1);
 							},
 						])
 					]);
 				)
 			};
-
 			~butts.modes[0].addFunc(
 				button:5,
 				function:{
@@ -97,6 +96,11 @@ PR(\abstractProcess).v.clone({
 				// buttons 0 to 4 are not really modifiers.  They set the level
 				// and then, the level is used to set the pitch.
 				~butts.modes[g].buttonFunctions[0..4].do{|i,j| i.makeModifier(j)};
+
+				// Enable double clicks for buttons 6..9.
+				(6..9).do({|i|
+					~butts.modes[g].buttonFunctions[i].enableNclick;
+				});
 				// for each button(0 to 4), add function to level 0.
 				(0..4).do{|i,j|
 					~butts.modes[g].buttonFunctions[i].functions[1][0] = (
@@ -120,7 +124,7 @@ PR(\abstractProcess).v.clone({
 				// ~butts.modes[g].buttonFunctions[0..4].do{|i,j| i.makeModifier(j)};
 
 				// button 5 switch back to mode 0 (any level works).
-				butts.modes[g].addFunc(
+				~butts.modes[g].addFunc(
 					button: 5,
 					function: {
 						BP(\sponge).butts.mode_(0);
@@ -131,45 +135,110 @@ PR(\abstractProcess).v.clone({
 					buttState: 1
 				);
 
-				// button 6 turns pitch bend on (any level works).
-				~butts.modes[g].buttonFunctions[6].functions[1] =
-				Array.fill(32, {{
-					\pbOn.post; h.postln;
-					BP(h).pitcher.map(\bend, ~sponge[\bend].bus);
-				}});
+				// button 6 freezes the voice.
+				// Double click stops it.
+				~butts.modes[g].addFunc(
+					button: 6,
+					function: {
+						\freeze.post; h.postln;
+						BP(h).freezeMe;
+					},
+					levels: (0..31),
+					buttState: 1
+				);
+				~butts.modes[g].addFunc(
+					button: 6,
+					function: {
+						\stop.post; h.postln;
+						BP(h).stop;
+					},
+					levels: (0..31),
+					buttState: 2
+				);
 
-				~butts.modes[g].buttonFunctions[6].functions[0] =
-				Array.fill(32, {{
-					\pbOff.post; h.postln;
-					BP(h).pitcher.set(\bend, 0);
-				}});
+				// button 7 starts the voice.
+				// Double click unfreezes it.
+				~butts.modes[g].addFunc(
+					button: 7,
+					function: {
+						\play.post; h.postln;
+						BP(h).play(0,doReset: true);
+					},
+					levels: (0..31),
+					buttState: 1
+				);
+				~butts.modes[g].addFunc(
+					button: 7,
+					function: {
+						\unfreeze.post; h.postln;
+						BP(h).unfreezeMe;
+					},
+					levels: (0..31),
+					buttState: 2
+				);
 
-				// button 8 stops the voice (any level works).
-				~butts.modes[g].buttonFunctions[8].functions[1] =
-				Array.fill(32, {{
-					\stop.post; h.postln;
-					BP(h).stop;
-				}});
+				// button 8 8vb
+				// Double click sticks it.
+				~butts.modes[g].addFunc(
+					button: 8,
+					function: {
+						\octVbTmp.post; h.postln;
+						BP(h).octTmp(-1);
+					},
+					levels: (0..31),
+					buttState: 1
+				);
+				~butts.modes[g].addFunc(
+					button: 8,
+					function: {
+						\octReset.post; h.postln;
+						BP(h).octReset;
+					},
+					levels: (0..31),
+					buttState: 0
+				);
+				~butts.modes[g].addFunc(
+					button: 8,
+					function: {
+						\octVbStuck.post; h.postln;
+						BP(h).octVb;
+					},
+					levels: (0..31),
+					buttState: 2
+				);
 
-				// button 9 plays the voice (any level works).
-				~butts.modes[g].buttonFunctions[9].functions[1] =
-				Array.fill(32, {{
-					\play.post; h.postln;
-					BP(h).play(0,doReset: true);
-				}});
+				// button 9 = 8va
+				// Double click sticks it.
+				~butts.modes[g].addFunc(
+					button: 9,
+					function: {
+						\octVaTmp.post; h.postln;
+						BP(h).octTmp(1);
+					},
+					levels: (0..31),
+					buttState: 1
+				);
+				~butts.modes[g].addFunc(
+					button: 9,
+					function: {
+						\octReset.post; h.postln;
+						BP(h).octReset(-1);
+					},
+					levels: (0..31),
+					buttState: 0
+				);
+				~butts.modes[g].addFunc(
+					button: 9,
+					function: {
+						\octVaStuck.post; h.postln;
+						BP(h).octVa;
+					},
+					levels: (0..31),
+					buttState: 2
+				);
 
 			};
 
-			/*
-			// Clarinet mode
-			~butts.newMode;//Clari mode
-			~butts.modes[5].buttonFunctions[0].functions[1] =
-			Array.fill(32, {{
-				BP(\sponge).butts.mode_(0);
-				("mode:" + 0).postln; 
-				BP(\sponge).butts.mode.level_(0);
-			}});
-			*/
 		});
 	};
 

@@ -29,6 +29,7 @@ PR(\withSponge).clone({					// withInterpolator
 		);
 	});
 	~asPatternList = ~asPatternList.deepCopy.addFunc({
+		~frozen = false;
 		6.do({ |i|
 			~interpolator.connect(i, ~sponge.features[i]);
 		});
@@ -36,6 +37,15 @@ PR(\withSponge).clone({					// withInterpolator
 	});
 	~freezeMe = {
 		6.do({ |i| ~interpolator.disconnect(i);	});
+		~frozen = true;
+	};
+	~unfreezeMe = {
+		~frozen.if({
+			6.do({ |i|
+				~interpolator.connect(i, ~sponge.features[i]);
+			});
+			~frozen = false;
+		});
 	};
 	~stopCleanupList = ~stopCleanupList.deepCopy.addFunc({
 		6.do({ |i|
@@ -48,7 +58,7 @@ PR(\withSponge).clone({					// withInterpolator
 }).chuck(PR(\withInterpolator));
 
 PR(\withInterpolator).clone({ 			// withAmp
-	~relTime = 3.0;
+	~relTime = 0.2;
 	~prepList = ~prepList.deepCopy.addFunc({
 		SynthDef(\ampExtractor, {
 			arg out=0, in = #[0,0,0,0,0,0];
