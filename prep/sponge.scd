@@ -120,13 +120,17 @@ PR(\abstractProcess).v.clone({
 				// ~butts.modes[g].buttonFunctions[0..4].do{|i,j| i.makeModifier(j)};
 
 				// button 5 switch back to mode 0 (any level works).
-				~butts.modes[g].buttonFunctions[5].functions[1] =
-				Array.fill(32, {{
-					BP(\sponge).butts.mode_(0);
-					("mode:" + 0).postln; 
-					BP(\sponge).butts.mode.level_(0);
-				}});
-				
+				butts.modes[g].addFunc(
+					button: 5,
+					function: {
+						BP(\sponge).butts.mode_(0);
+						("mode:" + 0).postln; 
+						BP(\sponge).butts.mode.level_(0);
+					},
+					levels: (0..31),
+					buttState: 1
+				);
+
 				// button 6 turns pitch bend on (any level works).
 				~butts.modes[g].buttonFunctions[6].functions[1] =
 				Array.fill(32, {{
