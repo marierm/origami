@@ -35,15 +35,11 @@ PR(\abstractProcess).v.clone({
 						1, Array.newClear(32).putEach([0,1,2,4],[
 							{			// 0
 								\stop.post; j.postln;
-								BP( ("forms" ++ j).asSymbol ).stop(0);
 								BP(j).stop(0);
-								BP(("disto" ++ j).asSymbol).stop(0);
 							},
 							{ 			// 1
 								\play.post; j.postln;
 								BP(j).play(0,doReset: true);
-								BP( ("forms" ++ j).asSymbol ).play(0);
-								BP(("disto" ++ j).asSymbol).play(0);
 							},
 							{ 			// 2
 								\pbOn.post; j.postln;
