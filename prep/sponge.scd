@@ -222,7 +222,7 @@ PR(\abstractProcess).v.clone({
 					button: 9,
 					function: {
 						\octReset.post; h.postln;
-						BP(h).octReset(-1);
+						BP(h).octReset;
 					},
 					levels: (0..31),
 					buttState: 0
@@ -237,6 +237,24 @@ PR(\abstractProcess).v.clone({
 					buttState: 2
 				);
 
+				// button 8 + 9 = pitch bend
+				~butts.modes[g].addCombo(
+					comboBits: 2r1100000000,
+					function: {
+						\pbOn.post; h.postln;
+						BP(h).octReset;
+						BP(h).pitcher.map(\bend, ~sponge[\bend].bus);
+					},
+					buttState: 1
+				);
+				~butts.modes[g].addCombo(
+					comboBits: 2r1100000000,
+					function: {
+						\pbOff.post; h.postln;
+						BP(h).pitcher.set(\bend, 0);
+					},
+					buttState: 0
+				);
 			};
 
 		});
