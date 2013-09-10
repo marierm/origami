@@ -6,6 +6,13 @@
 // éviter les doublons de granulation.
 
 // Permettre d'enregistrer les gestes du partenaire?
+// S'assurer que les voix "existent" pour éviter les erreurs au premier démarrage d'une voix.
+// Debugger pitcher not understood
+// Régler problème de démarrage de voix qui s'arrête.
+// Régler dédoublement de feu.
+// changer pitch bend
+
+Quarks.gui;
 BP.freeAll;
 (
 {
@@ -61,3 +68,7 @@ BP(2).notes = BP(2).notes -24
 BP(\feu).interpolator.gui;
 ChuckableBrowser()
 BP(\sponge).sponge.gui;
+
+
+(2r1111111111 & 2r1).asBinaryDigits(10)
+(2r1100000000 & 2r1000000000).asBinaryDigits(10)

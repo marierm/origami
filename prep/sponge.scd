@@ -146,7 +146,7 @@ PR(\abstractProcess).v.clone({
 					button: 6,
 					function: {
 						\stop.post; h.postln;
-						BP(h).stop;
+						BP(h).stop(0);
 					},
 					levels: (0..31),
 					buttState: 2
