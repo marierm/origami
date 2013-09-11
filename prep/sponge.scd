@@ -29,13 +29,13 @@ PR(\abstractProcess).v.clone({
 			// Level 1 starts the voice.
 			// Level 16 (bit 4) changes to "pitch control" mode.
 			// ~butts.modes[0].buttonFunctions[0..4].do{|i,j|
-			~butts.modes[0].buttonFunctions[9..5].do{|i,j|
+			~butts.modes[0].buttonFunctions[9..6].do{|i,j|
 				i.functions_(
 					Dictionary.newFrom([
 						1, Array.newClear(32).putEach([0,1,2,4],[
 							{			// 0
 								\stop.post; j.postln;
-								BP(j).stop(0);
+								BP(j).stopNow;
 							},
 							{ 			// 1
 								\play.post; j.postln;
@@ -63,11 +63,12 @@ PR(\abstractProcess).v.clone({
 					]);
 				)
 			};
+
 			~butts.modes[0].addFunc(
 				button:5,
 				function:{
 					\stop.post;	\feu.postln;
-					BP(\feu).stop(0);
+					BP(\feu).stopNow;
 				},
 				levels: [0],
 				buttState: 1
@@ -131,52 +132,56 @@ PR(\abstractProcess).v.clone({
 					buttState: 1
 				);
 
-				// button 6 freezes the voice.
+				// button 8 freezes the voice.
 				// Double click stops it.
 				~butts.modes[g].addFunc(
-					button: 6,
-					function: {
-						\freeze.post; h.postln;
-						BP(h).freezeMe;
-					},
-					levels: (0..31),
-					buttState: 1
-				);
-				~butts.modes[g].addFunc(
-					button: 6,
-					function: {
-						\stop.post; h.postln;
-						BP(h).stop(0);
-					},
-					levels: (0..31),
-					buttState: 2
-				);
-
-				// button 7 starts the voice.
-				// Double click unfreezes it.
-				~butts.modes[g].addFunc(
-					button: 7,
-					function: {
-						\play.post; h.postln;
-						BP(h).play(0,doReset: true);
-					},
-					levels: (0..31),
-					buttState: 1
-				);
-				~butts.modes[g].addFunc(
-					button: 7,
+					button: 8,
 					function: {
 						\unfreeze.post; h.postln;
 						BP(h).unfreezeMe;
 					},
 					levels: (0..31),
+					buttState: 1
+				);
+				~butts.modes[g].addFunc(
+					button: 8,
+					function: {
+						\freeze.post; h.postln;
+						BP(h).freezeMe;
+					},
+					levels: (0..31),
 					buttState: 2
+				);
+
+				// button 9 starts the voice.
+				// Double click stops it.
+				~butts.modes[g].addFunc(
+					button: 9,
+					function: {
+						\stop.post; h.postln;
+						BP(h).stopNow;
+						// \play.post; h.postln;
+						// BP(h).play(0,doReset: true);
+					},
+					levels: (0..31),
+					buttState: 2
+				);
+				~butts.modes[g].addFunc(
+					button: 9,
+					function: {
+						\play.post; h.postln;
+						BP(h).play(0,doReset: true);
+						// \unfreeze.post; h.postln;
+						// BP(h).unfreezeMe;
+					},
+					levels: (0..31),
+					buttState: 1
 				);
 
 				// button 8 8vb
 				// Double click sticks it.
 				~butts.modes[g].addFunc(
-					button: 8,
+					button: 6,
 					function: {
 						\octVbTmp.post; h.postln;
 						BP(h).octTmp(-1);
@@ -185,7 +190,7 @@ PR(\abstractProcess).v.clone({
 					buttState: 1
 				);
 				~butts.modes[g].addFunc(
-					button: 8,
+					button: 6,
 					function: {
 						\octReset.post; h.postln;
 						BP(h).octReset;
@@ -194,7 +199,7 @@ PR(\abstractProcess).v.clone({
 					buttState: 0
 				);
 				~butts.modes[g].addFunc(
-					button: 8,
+					button: 6,
 					function: {
 						\octVbStuck.post; h.postln;
 						BP(h).octVb;
@@ -206,7 +211,7 @@ PR(\abstractProcess).v.clone({
 				// button 9 = 8va
 				// Double click sticks it.
 				~butts.modes[g].addFunc(
-					button: 9,
+					button: 7,
 					function: {
 						\octVaTmp.post; h.postln;
 						BP(h).octTmp(1);
@@ -215,7 +220,7 @@ PR(\abstractProcess).v.clone({
 					buttState: 1
 				);
 				~butts.modes[g].addFunc(
-					button: 9,
+					button: 7,
 					function: {
 						\octReset.post; h.postln;
 						BP(h).octReset;
@@ -224,7 +229,7 @@ PR(\abstractProcess).v.clone({
 					buttState: 0
 				);
 				~butts.modes[g].addFunc(
-					button: 9,
+					button: 7,
 					function: {
 						\octVaStuck.post; h.postln;
 						BP(h).octVa;
@@ -233,9 +238,9 @@ PR(\abstractProcess).v.clone({
 					buttState: 2
 				);
 
-				// button 8 + 9 = pitch bend
+				// button 6 + 7 = pitch bend
 				~butts.modes[g].addCombo(
-					comboBits: 2r1100000000,
+					comboBits: 2r0011000000,
 					function: {
 						\pbOn.post; h.postln;
 						BP(h).octReset;
@@ -244,7 +249,7 @@ PR(\abstractProcess).v.clone({
 					buttState: 1
 				);
 				~butts.modes[g].addCombo(
-					comboBits: 2r1100000000,
+					comboBits: 2r0011000000,
 					function: {
 						\pbOff.post; h.postln;
 						BP(h).pitcher.set(\bend, 0);
