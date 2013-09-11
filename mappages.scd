@@ -1,18 +1,12 @@
 // Fix removepoint; Ajouter contrôle de seuil et de durée dans l'interpolateur
 // feu.  Seuil sur capteur de pression???
-// Ajouter pression -> damping.
 // Ajouter des "done signal".
-// Changer code de sponge.scd (hériter des autres dans fm).
-// éviter les doublons de granulation.
 
 // Permettre d'enregistrer les gestes du partenaire?
 // S'assurer que les voix "existent" pour éviter les erreurs au premier démarrage d'une voix.
 // Debugger pitcher not understood
 // Régler problème de démarrage de voix qui s'arrête.
-// Régler dédoublement de feu.
-// changer pitch bend
 
-Quarks.gui;
 BP.freeAll;
 (
 {
@@ -45,6 +39,7 @@ BP.freeAll;
 	\readyFeu.postln;
 }.fork;
 )
+
 
 ( // Save all interpolators.
 4.do({|i|
