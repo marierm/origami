@@ -88,63 +88,73 @@ PR(\withDamp).clone({ 					// fm
 		].controls.collect(_.name).indexOf(\interpol);
 	});
 
-	~asPatternList = ~asPatternList.copy.addFunc({
-		~pitcher = Synth.head(~pargroup,\pitcher, [
-			\out, ~freqBuses.index,
-			\bendRange, 2,
-			\base, ~notes,
-			\bend, 0
-		]).map(
-			// \bend, ~sponge[\bend].bus,
-			\offset, ~pitchOsBus
-		);
+	~asPatternList = ~asPatternList.deepCopy.addFunc({
+		//Make sure everything is clean.
+		~fm.isPlaying.if({
+			~fm.free;
+			~pitcher.free;
+		});
 
-		// map freq interpolator to pitcher synth
-		~pitcher.map( *
-			6.collect({|i|
-				[~interpolId + i , ~interpolator.cursor.parameters[i*2].bus]
-			}).flat;			
-		);
+		~server.makeBundle(nil,{
+			~pitcher = Synth.head(~pargroup,\pitcher, [
+				\out, ~freqBuses.index,
+				\bendRange, 2,
+				\base, ~notes,
+				\bend, 0
+			]).map(
+				// \bend, ~sponge[\bend].bus,
+				\offset, ~pitchOsBus
+			);
 
-		~fm = Synth.after(~pitcher, \fm, [
-			// \out, ~bus.index,
-			\out, 0
-			// \amp, 0.1
-		]);
+			// map freq interpolator to pitcher synth
+			~pitcher.map( *
+				6.collect({|i|
+					[~interpolId + i , ~interpolator.cursor.parameters[i*2].bus]
+				}).flat;			
+			);
 
-		~fm.map( \amps, ~ampBus);
-		
-		// Map output of pitcher to fm freqs.
-		~fm.map( *
-			~notes.size.collect({|i|
-				[(\freq ++ i).asSymbol, ~freqBuses.subBus(i)]
-			}).flat;
-		);
+			~fm = Synth.after(~pitcher, \fm, [
+				// \out, ~bus.index,
+				\out, 0
+				// \amp, 0.1
+			]);
 
-		// Map interpolator amps to fm amps
-		~fm.map( *
-			~interpolator.cursor.parameters.select({|i|
-				i.name.beginsWith("amp");
-			}).collect({|param|
-				[param.name.asSymbol, param.bus]
-			}).flat;
-		);
+			~fm.map( \amps, ~ampBus);
+			
+			// Map output of pitcher to fm freqs.
+			~fm.map( *
+				~notes.size.collect({|i|
+					[(\freq ++ i).asSymbol, ~freqBuses.subBus(i)]
+				}).flat;
+			);
 
-		// Map interpolator mods to fm mods
-		~fm.map( *
-			~interpolator.cursor.parameters.select({|i|
-				i.name.beginsWith("mod");
-			}).collect({ |param|
-				[param.name.asSymbol, param.bus]
-			}).flat;
-		);
+			// Map interpolator amps to fm amps
+			~fm.map( *
+				~interpolator.cursor.parameters.select({|i|
+					i.name.beginsWith("amp");
+				}).collect({|param|
+					[param.name.asSymbol, param.bus]
+				}).flat;
+			);
 
+			// Map interpolator mods to fm mods
+			~fm.map( *
+				~interpolator.cursor.parameters.select({|i|
+					i.name.beginsWith("mod");
+				}).collect({ |param|
+					[param.name.asSymbol, param.bus]
+				}).flat;
+			);
+			NodeWatcher.register(~fm);
+		});
 		1.asPattern;
 	});
 
 	~stopCleanupList = ~stopCleanupList.deepCopy.addFunc({
-		~pitcher.free;
-		~fm.release(~relTime);
+		~fm.isPlaying.if({
+			~server.sendBundle(~relTime, ~pitcher.freeMsg );
+			~fm.release(~relTime);
+		});
 	});
 
 	~freeCleanupList = ~freeCleanupList.deepCopy.addFunc({

@@ -77,18 +77,26 @@ PR(\withInterpolator).clone({ 			// withAmp
 			\acc2xHP, \acc2yHP, \acc2zHP
 		].collect({|i| ~sponge[i].bus});
 
-		~ampExtractor = Synth.tail(Server.default, \ampExtractor, [
-			\out, ~ampBus
-		]).map( *
-			6.collect({|i| [i+1, ~inputs[i]]}).flat;
-		);
+		~damper.isPlaying.if({
+			~ampExtractor.free;
+		});
+
+
+		~server.makeBundle(nil, {
+			~ampExtractor = Synth.tail(Server.default, \ampExtractor, [
+				\out, ~ampBus
+			]).map( *
+				6.collect({|i| [i+1, ~inputs[i]]}).flat;
+			);
+			NodeWatcher.register(~ampExtractor);
+		});
 		1.asPattern;
 	});
 	~stopCleanupList = ~stopCleanupList.deepCopy.addFunc({
 		// wait for ~relTime seconds before freeing ~ampExtractor.
-		{
+		~ampExtractor.isPlaying.if({
 			~server.sendBundle(~relTime, ~ampExtractor.freeMsg );
-		}.try; //try block avoids "freeMsg not understood";
+		});
 	});
 	~freeCleanupList = ~freeCleanupList.deepCopy.addFunc({
 		~ampExtractor.free;
@@ -117,24 +125,30 @@ PR(\withAmp).clone({ 			// withDamp
 	});
 
 	~asPatternList = ~asPatternList.deepCopy.addFunc({
-		~damper = Synth.after(~ampExtractor, \damper, [
-			\out, ~damperBus.index,
-			\min, ~damperMin,
-			\max, ~damperMax,
-			\curve, ~damperCurve
-		]).map(
-			\inA, ~damperInA,
-			\inB, ~damperInB
-		);
-		~ampExtractor.map(\decayCoef, ~damperBus);
+		~damper.isPlaying.if({
+			~damper.free;
+		});
+		~server.makeBundle(nil,{
+			~damper = Synth.after(~ampExtractor, \damper, [
+				\out, ~damperBus.index,
+				\min, ~damperMin,
+				\max, ~damperMax,
+				\curve, ~damperCurve
+			]).map(
+				\inA, ~damperInA,
+				\inB, ~damperInB
+			);
+			~ampExtractor.map(\decayCoef, ~damperBus);
+			NodeWatcher.register(~damper);
+		});
 		1.asPattern;
 	});
 
 	~stopCleanupList = ~stopCleanupList.deepCopy.addFunc({
 		// wait for ~relTime seconds before freeing
-		{
+		~damper.isPlaying.if({
 			~server.sendBundle(~relTime, ~damper.freeMsg );
-		}.try; //try block avoids "freeMsg not understood";
+		});
 	});
 	~freeCleanupList = ~freeCleanupList.deepCopy.addFunc({
 		~damperBus.free;
