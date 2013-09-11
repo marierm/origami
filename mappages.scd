@@ -1,11 +1,8 @@
 // Fix removepoint; Ajouter contrôle de seuil et de durée dans l'interpolateur
 // feu.  Seuil sur capteur de pression???
-// Ajouter des "done signal".
-
 // Permettre d'enregistrer les gestes du partenaire?
-// S'assurer que les voix "existent" pour éviter les erreurs au premier démarrage d'une voix.
 // Debugger pitcher not understood
-// Régler problème de démarrage de voix qui s'arrête.
+
 
 BP.freeAll;
 (
