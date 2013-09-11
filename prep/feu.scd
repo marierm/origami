@@ -1,9 +1,6 @@
-PR(\abstractProcess).v.clone({
+PR(\withDamp).clone({
 	~audioFilePath = "../samples/feuHuards.aiff".resolveRelative;
 	// ~interpolatorPath = Date.getDate.format("feu_%Y-%m-%d_" ++ i ++ ".pri").resolveRelative;
-	~interpolatorPath = nil;
-	~sponge = BP(\sponge).sponge;
-	~numCoeff = 6;
 	// ~onsetSens = 0.5;
 	// ~onsetType = \rcomplex;
 	~onsetSens = 2.0;
@@ -11,8 +8,7 @@ PR(\abstractProcess).v.clone({
 	~onsetDur = 6000;
 	~out = 0;
 	
-	~prep = {
-		// ~scmirAudioFile = SCMIRAudioFile(~audioFilePath,[[\MFCC, ~numCoeff]]);
+	~prepList = ~prepList.deepCopy.addFunc({
 		~scmirAudioFile = SCMIRAudioFile(~audioFilePath,[[\SpecCentroid]]);
 		~scmirAudioFile.extractFeatures(normalize:false); 
 		~scmirAudioFile.extractOnsets(~onsetSens, ~onsetType);
@@ -29,10 +25,6 @@ PR(\abstractProcess).v.clone({
 		// ~position = Array.fill(~numCoeff,{0});
 		// ~ranges = ~centroids.flop.collect({|i| [i.minItem, i.maxItem]});
 		~range = [~centroids.minItem, ~centroids.maxItem];
-
-		~interpolator = PresetInterpolatorServer.newLoad(
-			~interpolatorPath
-		);
 
 		SynthDef(\granuleur, {
 			arg out=0,trigger=1.0, dur=0.1, bufnum = #[0,1],
@@ -85,9 +77,9 @@ PR(\abstractProcess).v.clone({
 			Server.default.sync;
 			~sponge.activateFeature(\acc1xTrig);
 		}.fork;
-	};
+	});
 
-	~asPattern = {
+	~asPatternList = ~asPatternList.deepCopy.addFunc({
 		~granuleur = Synth.tail(~group, \granuleur, [
 			\out, ~out,
 			\bufnum, [~buf[0].bufnum, ~buf[1].bufnum],
@@ -109,29 +101,24 @@ PR(\abstractProcess).v.clone({
 			\pos, ~indexBus
 		);
 
-		6.do({ |i|
-			~interpolator.connect(i, ~sponge.features[i]);
-		});
+		1.asPattern;
+	});
 
-	};
+	~stopCleanupList = ~stopCleanupList.deepCopy.addFunc({
+		{
+			~granuleur.free;
+			~posMapper.free;
+		}.try;
+	});
 
-	~stopCleanup = {
-		~sponge.action = ~sponge.action.removeFunc(~func);
-		~granuleur.free;
-		~posMapper.free;
-		6.do({ |i|
-			try { ~interpolator.disconnect(i) };
-		});
-	};
-
-	~freeCleanup = {
+	~freeCleanupList = ~freeCleanupList.deepCopy.addFunc({
 		~bus.free;
 		~group.free;
 		~buf.free;
 		~envBuf.free;
 		~indicesBuf.free;	
 		~indexBus.free;
-	};
+	});
 
-}) => PR(\granule);
+}).chuck(PR(\granule));
 

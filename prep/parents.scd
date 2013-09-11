@@ -6,7 +6,7 @@
 //             -> fm
 //          -> granule
 
-PR(\abstractProcess).clone({   // withLists
+Proto({   // withLists
 	// Do this when cloning:
 	// ~prepList = ~prepList.deepCopy.addFunc({ });
 	~server = Server.default;
