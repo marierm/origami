@@ -81,7 +81,7 @@ PR(\withDamp).clone({ 					// fm
 		~pargroup = ParGroup.tail();
 		// ~damp = BP(\sponge).damperBus.asMap;
 
-		// This stores out the index of the \interpol control input.
+		// This stores the index of the \interpol control input.
 		// Is there a better way to do this?
 		~interpolId = SynthDescLib.global[
 			\pitcher
@@ -124,7 +124,7 @@ PR(\withDamp).clone({ 					// fm
 			// Map output of pitcher to fm freqs.
 			~fm.map( *
 				~notes.size.collect({|i|
-					[(\freq ++ i).asSymbol, ~freqBuses.subBus(i)]
+					[ (\freq ++ i).asSymbol, ~freqBuses.subBus(i) ]
 				}).flat;
 			);
 
