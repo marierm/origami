@@ -280,15 +280,15 @@ PR(\withPitch).clone({ 			// withChords
 	// ~notes = ([ \en1, \en2, \bn2].keynum.mirror2.clump(3)).flat;
 	~chords = ([
 		~notes.deepCopy,
-		[ \en1, \en2, \gn3, \dn4, \fs4, \bn4].keynum,
-		[ \en1, \dn2, \fs3, \dn4, \fs4, \bn4].keynum,
-		[ \en1, \cn2, \gn3, \dn4, \fs4, \bn4].keynum,
-		[ \en1, \bn1, \an3, \dn4, \fs4, \bn4].keynum,
+		[ \en2, \en3, \gn3, \dn4, \fs4, \bn4].keynum,
+		[ \en2, \dn3, \fs3, \dn4, \fs4, \bn4].keynum,
+		[ \en2, \cn3, \gn3, \dn4, \fs4, \bn4].keynum,
+		[ \en2, \bn2, \an3, \dn4, \fs4, \bn4].keynum,
 
-		[ \en1, \en2, \cn4, \dn4, \fs4, \bn4].keynum,
-		[ \en1, \dn2, \gn3, \cn4, \fs4, \bn4].keynum,
-		[ \en1, \cn2, \gn3, \bn3, \fs4, \bn4].keynum,
-		[ \en1, \dn2, \fs3, \bn3, \en4, \an4].keynum
+		[ \en2, \en3, \cn4, \dn4, \fs4, \bn4].keynum,
+		[ \en2, \dn3, \gn3, \cn4, \fs4, \bn4].keynum,
+		[ \en2, \cn3, \gn3, \bn3, \fs4, \bn4].keynum,
+		[ \en2, \dn3, \fs3, \bn3, \en4, \an4].keynum
 		// [ \en1, \bn1, \cn3, \dn4, \fs4, \bn4].keynum,
 	]);
 

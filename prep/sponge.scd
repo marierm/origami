@@ -291,7 +291,6 @@ PR(\abstractProcess).v.clone({
 					).addFunc({
 						// do it when button is released too
 						BP(h).setChord(
-							\noteOff.postln;
 							~conversionTable[ ~butts.modes[g].level ]
 						);
 					});
@@ -338,22 +337,22 @@ PR(\abstractProcess).v.clone({
 
 				// Clicking on button 8 holds the current chord even if left
 				// buttons are released.
-				~butts.modes[g].addFunc(
-					button: 8,
-					function: {
-						~butts.modes[g].level_(64);
-					},
-					levels: (0..31),
-					buttState: 1
-				);
-				~butts.modes[g].addFunc(
-					button: 8,
-					function: {
-						~butts.modes[g].level_(0)
-					},
-					levels: ([64]),
-					buttState: 0
-				);
+				// ~butts.modes[g].addFunc(
+				// 	button: 8,
+				// 	function: {
+				// 		~butts.modes[g].level_(64);
+				// 	},
+				// 	levels: (0..31),
+				// 	buttState: 1
+				// );
+				// ~butts.modes[g].addFunc(
+				// 	button: 8,
+				// 	function: {
+				// 		~butts.modes[g].level_(0)
+				// 	},
+				// 	levels: ([64]),
+				// 	buttState: 0
+				// );
 
 				// button 6 8vb
 				// Double click sticks it.

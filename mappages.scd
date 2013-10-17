@@ -5,6 +5,21 @@
 // mettre le double-clique plus long
 Server.program = "/usr/local/bin/scsynth";
 
+BP(3).chords = ([
+	BP(3).notes.deepCopy,
+	[ \en2, \en3, \gn3, \dn4, \fs4, \bn4].keynum,
+	[ \en2, \dn3, \fs3, \dn4, \fs4, \bn4].keynum,
+	[ \en2, \cn3, \gn3, \dn4, \fs4, \bn4].keynum,
+	[ \en2, \bn2, \an3, \dn4, \fs4, \bn4].keynum,
+
+	[ \en2, \en3, \cn4, \dn4, \fs4, \bn4].keynum,
+	[ \en2, \dn3, \gn3, \cn4, \fs4, \bn4].keynum,
+	[ \en2, \cn3, \gn3, \bn3, \fs4, \bn4].keynum,
+	[ \en2, \dn3, \fs3, \bn3, \en4, \an4].keynum
+	// [ \en1, \bn1, \cn3, \dn4, \fs4, \bn4].keynum,
+]);
+
+
 BP.freeAll;
 (
 {
@@ -61,7 +76,8 @@ BP.freeAll;
 )
 
 
-BP(0).interpolator.gui;
+
+BP(2).interpolator.gui;
 BP(0).interpolator.newSave(Date.getDate.format("granSin"++0++"_%Y-%m-%d.pri").resolveRelative)
 
 
