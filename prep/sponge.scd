@@ -13,6 +13,7 @@ PR(\abstractProcess).v.clone({
 		Server.default.waitForBoot({
 			// open sponge port
 			~sponge = SpongeSLIP(baudRate:115200);
+			// ~sponge = SpongeEmu(baudRate:115200);
 			// activate the features needed
 			[
 				\acc1xHP, \acc1yHP, \acc1zHP,
@@ -50,13 +51,17 @@ PR(\abstractProcess).v.clone({
 								BP(j).freezeMe;
 							}
 						]),
-						0, Array.newClear(32).putEach([2, 16],[
+						0, Array.newClear(32).putEach([2, 8, 16],[
 							{ 			// 2
 								\pbOff.post; j.postln;
 								BP(j).pitcher.set(\bend, 0);
 							},
 							{
-								("mode:" + (j + 1)).postln;
+								("mode harmo " + (j + 1)).postln;
+								BP(\sponge).butts.mode_(j + 5);
+							},
+							{
+								("mode pitch" + (j + 1)).postln;
 								BP(\sponge).butts.mode_(j + 1);
 							},
 						])
@@ -132,8 +137,8 @@ PR(\abstractProcess).v.clone({
 					buttState: 1
 				);
 
-				// button 8 freezes the voice.
-				// Double click stops it.
+				// Double click on button 8 freezes the voice.
+				// Single click unfreezes it.
 				~butts.modes[g].addFunc(
 					button: 8,
 					function: {
@@ -178,7 +183,7 @@ PR(\abstractProcess).v.clone({
 					buttState: 1
 				);
 
-				// button 8 8vb
+				// button 6 8vb
 				// Double click sticks it.
 				~butts.modes[g].addFunc(
 					button: 6,
@@ -208,7 +213,179 @@ PR(\abstractProcess).v.clone({
 					buttState: 2
 				);
 
-				// button 9 = 8va
+				// button 7 = 8va
+				// Double click sticks it.
+				~butts.modes[g].addFunc(
+					button: 7,
+					function: {
+						\octVaTmp.post; h.postln;
+						BP(h).octTmp(1);
+					},
+					levels: (0..31),
+					buttState: 1
+				);
+				~butts.modes[g].addFunc(
+					button: 7,
+					function: {
+						\octReset.post; h.postln;
+						BP(h).octReset;
+					},
+					levels: (0..31),
+					buttState: 0
+				);
+				~butts.modes[g].addFunc(
+					button: 7,
+					function: {
+						\octVaStuck.post; h.postln;
+						BP(h).octVa;
+					},
+					levels: (0..31),
+					buttState: 2
+				);
+
+				// button 6 + 7 = pitch bend
+				~butts.modes[g].addCombo(
+					comboBits: 2r0011000000,
+					function: {
+						\pbOn.post; h.postln;
+						BP(h).octReset;
+						BP(h).pitcher.map(\bend, ~sponge[\bend].bus);
+					},
+					buttState: 1
+				);
+				~butts.modes[g].addCombo(
+					comboBits: 2r0011000000,
+					function: {
+						\pbOff.post; h.postln;
+						BP(h).pitcher.set(\bend, 0);
+					},
+					buttState: 0
+				);
+			};
+
+			// In modes 5 to 8, buttons 0 to 4 sets harmony of the
+			// corresponding voice.
+			(5..8).do{|g,h|
+				// make new modes
+				~butts.newMode;
+				// buttons 0 to 4 are not really modifiers.  They set the level
+				// and then, the level is used to set the chord.
+				~butts.modes[g].buttonFunctions[0..4].do{|i,j| i.makeModifier(j)};
+
+				// Enable double clicks for buttons 6..9.
+				(6..9).do({|i|
+					~butts.modes[g].buttonFunctions[i].enableNclick;
+				});
+				// for each button(0 to 4), add function to level 0.
+				(0..4).do{|i,j|
+					~butts.modes[g].buttonFunctions[i].functions[1][0] = (
+						~butts.modes[g].buttonFunctions[i].functions[1][0]
+					).addFunc({
+						// This func offsets the pitch of the voice.
+						BP(h).setChord(
+							~conversionTable[ ~butts.modes[g].level ]
+						);
+					});
+					~butts.modes[g].buttonFunctions[i].functions[0][0] = (
+						~butts.modes[g].buttonFunctions[i].functions[0][0]
+					).addFunc({
+						// do it when button is released too
+						BP(h).setChord(
+							\noteOff.postln;
+							~conversionTable[ ~butts.modes[g].level ]
+						);
+					});
+				};
+
+				// ~butts.modes[g].buttonFunctions[0..4].do{|i,j| i.makeModifier(j)};
+
+				// button 5 switches back to mode 0 (any level works).
+				~butts.modes[g].addFunc(
+					button: 5,
+					function: {
+						BP(\sponge).butts.mode_(0);
+						("mode:" + 0).postln; 
+						BP(\sponge).butts.mode.level_(0);
+					},
+					levels: (0..31),
+					buttState: 1
+				);
+
+				// button 9 starts the voice.
+				// Double click stops it.
+				~butts.modes[g].addFunc(
+					button: 9,
+					function: {
+						\stop.post; h.postln;
+						BP(h).stopNow;
+						// \play.post; h.postln;
+						// BP(h).play(0,doReset: true);
+					},
+					levels: (0..31),
+					buttState: 2
+				);
+				~butts.modes[g].addFunc(
+					button: 9,
+					function: {
+						\play.post; h.postln;
+						BP(h).play(0,doReset: true);
+						// \unfreeze.post; h.postln;
+						// BP(h).unfreezeMe;
+					},
+					levels: (0..31),
+					buttState: 1
+				);
+
+				// Clicking on button 8 holds the current chord even if left
+				// buttons are released.
+				~butts.modes[g].addFunc(
+					button: 8,
+					function: {
+						~butts.modes[g].level_(64);
+					},
+					levels: (0..31),
+					buttState: 1
+				);
+				~butts.modes[g].addFunc(
+					button: 8,
+					function: {
+						~butts.modes[g].level_(0)
+					},
+					levels: ([64]),
+					buttState: 0
+				);
+
+				// button 6 8vb
+				// Double click sticks it.
+				~butts.modes[g].addFunc(
+					button: 6,
+					function: {
+						\octVbTmp.post; h.postln;
+						BP(h).octTmp(-1);
+					},
+					levels: (0..31),
+					buttState: 1
+				);
+				~butts.modes[g].addFunc(
+					button: 6,
+					function: {
+						\octReset.post; h.postln;
+						BP(h).octReset;
+					},
+					levels: (0..31),
+					buttState: 0
+				);
+				~butts.modes[g].addFunc(
+					button: 6,
+					function: {
+						\octVbStuck.post; h.postln;
+						BP(h).octVb;
+					},
+					levels: (0..31),
+					buttState: 2
+				);
+
+				// button 7 = 8va
 				// Double click sticks it.
 				~butts.modes[g].addFunc(
 					button: 7,

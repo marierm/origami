@@ -1,28 +1,12 @@
 // withLists
 // -> withSponge
-//    -> withInterpolator
-//       -> withAmp
-//          -> withDamp
-//             -> fm
+//  -> withInterpolator
+//   -> withAmp
+//    -> withDamp
+//     -> withPitch
+//      -> fm
 
-PR(\withDamp).clone({ 					// fm
-	~notes = ([ \en1, \en2, \bn2].keynum.mirror2.clump(3)).flat;
-	~numNotes = 6;
-	~octVa = {
-		~notes = ~notes + 12;
-		~pitcher.set(\base, ~notes);
-	};
-	~octVb = {
-		~notes = ~notes - 12;
-		~pitcher.set(\base, ~notes);
-	};
-	~octTmp = { |oct|
-		~pitcher.set(\base, ~notes + (12 * oct));
-	};
-	~octReset = {
-		~pitcher.set(\base, ~notes);
-	};
-
+PR(\withChords).clone({ 					// fm
 	~prepList = ~prepList.deepCopy.addFunc({
 		SynthDef(\fm, {
 			arg out = 0, gate=1, att=0.3;
@@ -51,41 +35,7 @@ PR(\withDamp).clone({ 					// fm
 			);
 		}).add;
 
-		// Four controls for the pitch are combined:
-		//  1. Base pitch: ~notes (midi keynum)
-		//  2. Offset from sponge buttons: ~pitchOsBus (in semitones)
-		//  3. Pitch bend: ~pbBus (in semitones)
-		//  4. Fine pitch variations from interpolator: ~interpolFreqs
-
-		// ~freqBuses hold the resultant.  
-		SynthDef(\pitcher, {
-			arg out = 0, bendRange=2;
-			var base, offset, bend, interpol, freqs;
-			base = NamedControl.kr(\base, ~notes);
-			offset = NamedControl.kr(\offset, 0);
-			bend = NamedControl.kr(\bend, 0);
-			bend = bend.linlin(-pi, pi, bendRange * -1, bendRange); 
-			interpol = NamedControl.kr(
-				\interpol, [0,0,0,0,0,0]
-			) * NamedControl.kr(
-				\coefImpactHauteur, 1.0 // adjust the impact of interpolator (for experiment);
-			);
-
-			freqs = (base + offset + bend + interpol).midicps;
-			ReplaceOut.kr(out, freqs);
-		}).add;
-
-		~pitchOsBus = Bus.control(s, 1);
-		~freqBuses = Bus.control(s, ~notes.size);
 		~bus = Bus.audio(s, 2);
-		~pargroup = ParGroup.tail();
-		// ~damp = BP(\sponge).damperBus.asMap;
-
-		// This stores the index of the \interpol control input.
-		// Is there a better way to do this?
-		~interpolId = SynthDescLib.global[
-			\pitcher
-		].controls.collect(_.name).indexOf(\interpol);
 	});
 
 	~asPatternList = ~asPatternList.deepCopy.addFunc({
@@ -96,22 +46,6 @@ PR(\withDamp).clone({ 					// fm
 		});
 
 		~server.makeBundle(nil,{
-			~pitcher = Synth.head(~pargroup,\pitcher, [
-				\out, ~freqBuses.index,
-				\bendRange, 2,
-				\base, ~notes,
-				\bend, 0
-			]).map(
-				// \bend, ~sponge[\bend].bus,
-				\offset, ~pitchOsBus
-			);
-
-			// map freq interpolator to pitcher synth
-			~pitcher.map( *
-				6.collect({|i|
-					[~interpolId + i , ~interpolator.cursor.parameters[i*2].bus]
-				}).flat;			
-			);
 
 			~fm = Synth.after(~pitcher, \fm, [
 				// \out, ~bus.index,
@@ -145,6 +79,12 @@ PR(\withDamp).clone({ 					// fm
 					[param.name.asSymbol, param.bus]
 				}).flat;
 			);
+
+			~pitcher.map( *
+				~notes.size.collect({|i|
+					[~interpolId + i , ~interpolator.cursor.parameters[i*2].bus]
+				}).flat;			
+			);
 			NodeWatcher.register(~fm);
 		});
 		1.asPattern;
@@ -152,13 +92,11 @@ PR(\withDamp).clone({ 					// fm
 
 	~stopCleanupList = ~stopCleanupList.deepCopy.addFunc({
 		~fm.isPlaying.if({
-			~server.sendBundle(~relTime, ~pitcher.freeMsg );
 			~fm.release(~relTime);
 		});
 	});
 
 	~freeCleanupList = ~freeCleanupList.deepCopy.addFunc({
 		~bus.free;
-		~pargroup.free;
 	});
 }).chuck(PR(\fm));

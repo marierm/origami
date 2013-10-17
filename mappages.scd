@@ -3,23 +3,23 @@
 // Permettre d'enregistrer les gestes du partenaire?
 // Debugger pitcher not understood
 // mettre le double-clique plus long
-// Server.program = "/usr/local/bin/scsynth";
+Server.program = "/usr/local/bin/scsynth";
 
 BP.freeAll;
 (
 {
+	var i;
     s.bootSync;
     "prep/sponge.scd".loadRelative;
 	1.wait;
 	s.sync;
     BP(\sponge).play;
-	\moo.postln;
 	"prep/parents.scd".loadRelative;
-	\2.postln;
     "prep/fm.scd".loadRelative;
-	\3.postln;
+	"prep/granSin.scd".loadRelative;
 	s.sync;
-    4.do({|i|
+    3.do({|i|
+    // 4.do({|i|
         PR(\fm).chuck(BP(i), parms:(
 			interpolatorPath: ("fm"++i++"*").resolveRelative.pathMatch.sort.last.resolveRelative,
 			notes: ([ \en1, \en2, \en3].keynum.mirror2.clump(3)).flat + (i * 12),
@@ -29,22 +29,45 @@ BP.freeAll;
 		s.sync;
 		("ready"++i).postln;
     });
-	("prep/feu.scd").loadRelative;
-	s.sync;
-	PR(\granule).chuck(BP(\feu), parms:(
-		interpolatorPath: ("presets/feu0*").resolveRelative.pathMatch.sort.last.resolveRelative,
-		// interpolatorPath: ("feu_2013-07-15.pri").resolveRelative,
-		// Date.getDate.format(
-		// 	"feu_%Y-%m-%d.pri").resolveRelative,
-		audioFilePath: "samples/feuHuards.aiff".resolveRelative
+	i = 3;
+	PR(\fm).chuck(BP(i), parms:(
+		interpolatorPath: ("fm"++i++"*").resolveRelative.pathMatch.sort.last.resolveRelative,
+		notes: ([ \en1, \en2, \en3].keynum.mirror2.clump(3)).flat + (i * 12),
+		numNotes: 6
 	));
-	5.wait;
+	// 4.wait;
+	s.sync;
+	("ready"++i).postln;
+
+
+	// PR(\granSin).chuck(BP(0) , parms:(
+	// 	interpolatorPath: ("granSin"++0++"*").resolveRelative.pathMatch.sort.last.resolveRelative,
+	// 	notes: [ \en1 ].keynum,
+	// 	numNotes: 1
+	// ));
+
+	// ("prep/feu.scd").loadRelative;
+	s.sync;
+	// PR(\granule).chuck(BP(\feu), parms:(
+	// 	interpolatorPath: ("presets/feu0*").resolveRelative.pathMatch.sort.last.resolveRelative,
+	// 	// interpolatorPath: ("feu_2013-07-15.pri").resolveRelative,
+	// 	// Date.getDate.format(
+	// 	// 	"feu_%Y-%m-%d.pri").resolveRelative,
+	// 	audioFilePath: "samples/feuHuards.aiff".resolveRelative
+	// ));
+	// 5.wait;
 	\readyFeu.postln;
 }.fork;
 )
 
 
+BP(0).interpolator.gui;
+BP(0).interpolator.newSave(Date.getDate.format("granSin"++0++"_%Y-%m-%d.pri").resolveRelative)
 
+
+
+
+x.gui
 
 ( // Save all interpolators.
 4.do({|i|
@@ -84,3 +107,4 @@ PR(\fm).chuck(BP(0), parms:(
 BP(0).interpolator.newSave(
 	Date.getDate.format("fm"++0++"_%Y-%m-%d.pri").resolveRelative
 );
+
