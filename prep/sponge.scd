@@ -99,8 +99,8 @@ PR(\abstractProcess).v.clone({
 				// and then, the level is used to set the pitch.
 				~butts.modes[g].buttonFunctions[0..4].do{|i,j| i.makeModifier(j)};
 
-				// Enable double clicks for buttons 6..9.
-				(6..9).do({|i|
+				// Enable double clicks for buttons 8..9.
+				(8..9).do({|i|
 					~butts.modes[g].buttonFunctions[i].enableNclick;
 				});
 				// for each button(0 to 4), add function to level 0.
@@ -184,25 +184,25 @@ PR(\abstractProcess).v.clone({
 				);
 
 				// button 6 8vb
-				// Double click sticks it.
-				~butts.modes[g].addFunc(
-					button: 6,
-					function: {
-						\octVbTmp.post; h.postln;
-						BP(h).octTmp(-1);
-					},
-					levels: (0..31),
-					buttState: 1
-				);
-				~butts.modes[g].addFunc(
-					button: 6,
-					function: {
-						\octReset.post; h.postln;
-						BP(h).octReset;
-					},
-					levels: (0..31),
-					buttState: 0
-				);
+
+				// ~butts.modes[g].addFunc(
+				// 	button: 6,
+				// 	function: {
+				// 		\octVbTmp.post; h.postln;
+				// 		BP(h).octTmp(-1);
+				// 	},
+				// 	levels: (0..31),
+				// 	buttState: 1
+				// );
+				// ~butts.modes[g].addFunc(
+				// 	button: 6,
+				// 	function: {
+				// 		\octReset.post; h.postln;
+				// 		BP(h).octReset;
+				// 	},
+				// 	levels: (0..31),
+				// 	buttState: 0
+				// );
 				~butts.modes[g].addFunc(
 					button: 6,
 					function: {
@@ -210,29 +210,29 @@ PR(\abstractProcess).v.clone({
 						BP(h).octVb;
 					},
 					levels: (0..31),
-					buttState: 2
+					buttState: 1
 				);
 
 				// button 7 = 8va
-				// Double click sticks it.
-				~butts.modes[g].addFunc(
-					button: 7,
-					function: {
-						\octVaTmp.post; h.postln;
-						BP(h).octTmp(1);
-					},
-					levels: (0..31),
-					buttState: 1
-				);
-				~butts.modes[g].addFunc(
-					button: 7,
-					function: {
-						\octReset.post; h.postln;
-						BP(h).octReset;
-					},
-					levels: (0..31),
-					buttState: 0
-				);
+
+				// ~butts.modes[g].addFunc(
+				// 	button: 7,
+				// 	function: {
+				// 		\octVaTmp.post; h.postln;
+				// 		BP(h).octTmp(1);
+				// 	},
+				// 	levels: (0..31),
+				// 	buttState: 1
+				// );
+				// ~butts.modes[g].addFunc(
+				// 	button: 7,
+				// 	function: {
+				// 		\octReset.post; h.postln;
+				// 		BP(h).octReset;
+				// 	},
+				// 	levels: (0..31),
+				// 	buttState: 0
+				// );
 				~butts.modes[g].addFunc(
 					button: 7,
 					function: {
@@ -240,7 +240,7 @@ PR(\abstractProcess).v.clone({
 						BP(h).octVa;
 					},
 					levels: (0..31),
-					buttState: 2
+					buttState: 1
 				);
 
 				// button 6 + 7 = pitch bend
@@ -272,8 +272,8 @@ PR(\abstractProcess).v.clone({
 				// and then, the level is used to set the chord.
 				~butts.modes[g].buttonFunctions[0..4].do{|i,j| i.makeModifier(j)};
 
-				// Enable double clicks for buttons 6..9.
-				(6..9).do({|i|
+				// Enable double clicks for buttons 8..9.
+				(8..9).do({|i|
 					~butts.modes[g].buttonFunctions[i].enableNclick;
 				});
 				// for each button(0 to 4), add function to level 0.
@@ -355,25 +355,25 @@ PR(\abstractProcess).v.clone({
 				// );
 
 				// button 6 8vb
-				// Double click sticks it.
-				~butts.modes[g].addFunc(
-					button: 6,
-					function: {
-						\octVbTmp.post; h.postln;
-						BP(h).octTmp(-1);
-					},
-					levels: (0..31),
-					buttState: 1
-				);
-				~butts.modes[g].addFunc(
-					button: 6,
-					function: {
-						\octReset.post; h.postln;
-						BP(h).octReset;
-					},
-					levels: (0..31),
-					buttState: 0
-				);
+
+				// ~butts.modes[g].addFunc(
+				// 	button: 6,
+				// 	function: {
+				// 		\octVbTmp.post; h.postln;
+				// 		BP(h).octTmp(-1);
+				// 	},
+				// 	levels: (0..31),
+				// 	buttState: 1
+				// );
+				// ~butts.modes[g].addFunc(
+				// 	button: 6,
+				// 	function: {
+				// 		\octReset.post; h.postln;
+				// 		BP(h).octReset;
+				// 	},
+				// 	levels: (0..31),
+				// 	buttState: 0
+				// );
 				~butts.modes[g].addFunc(
 					button: 6,
 					function: {
@@ -381,29 +381,29 @@ PR(\abstractProcess).v.clone({
 						BP(h).octVb;
 					},
 					levels: (0..31),
-					buttState: 2
+					buttState: 1
 				);
 
 				// button 7 = 8va
-				// Double click sticks it.
-				~butts.modes[g].addFunc(
-					button: 7,
-					function: {
-						\octVaTmp.post; h.postln;
-						BP(h).octTmp(1);
-					},
-					levels: (0..31),
-					buttState: 1
-				);
-				~butts.modes[g].addFunc(
-					button: 7,
-					function: {
-						\octReset.post; h.postln;
-						BP(h).octReset;
-					},
-					levels: (0..31),
-					buttState: 0
-				);
+
+				// ~butts.modes[g].addFunc(
+				// 	button: 7,
+				// 	function: {
+				// 		\octVaTmp.post; h.postln;
+				// 		BP(h).octTmp(1);
+				// 	},
+				// 	levels: (0..31),
+				// 	buttState: 1
+				// );
+				// ~butts.modes[g].addFunc(
+				// 	button: 7,
+				// 	function: {
+				// 		\octReset.post; h.postln;
+				// 		BP(h).octReset;
+				// 	},
+				// 	levels: (0..31),
+				// 	buttState: 0
+				// );
 				~butts.modes[g].addFunc(
 					button: 7,
 					function: {
@@ -411,7 +411,7 @@ PR(\abstractProcess).v.clone({
 						BP(h).octVa;
 					},
 					levels: (0..31),
-					buttState: 2
+					buttState: 1
 				);
 
 				// button 6 + 7 = pitch bend
