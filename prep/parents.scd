@@ -63,12 +63,19 @@ PR(\withSponge).clone({					// withInterpolator
 
 PR(\withInterpolator).clone({ 			// withAmp
 	~relTime = 0.2;
+	~fsrMuteThreshold = 0.95;
 	~prepList = ~prepList.deepCopy.addFunc({
 		SynthDef(\ampExtractor, {
-			arg out=0, in = #[0,0,0,0,0,0];
+			arg out=0, in = #[0,0,0,0,0,0], threshold=0.95;
+			var decay = \decayCoef.kr(0.999);
 			Out.kr(
 				out,
-				EnvFollow.kr(in * 0.005, \decayCoef.kr(0.999))
+				Select.kr(
+					decay > threshold, [
+						0,
+						EnvFollow.kr(in * 0.005, decay)
+					]
+				)
 			);
 		}).add;
 
@@ -96,7 +103,8 @@ PR(\withInterpolator).clone({ 			// withAmp
 
 		~server.makeBundle(nil, {
 			~ampExtractor = Synth.tail(Server.default, \ampExtractor, [
-				\out, ~ampBus
+				\out, ~ampBus,
+				\threshold, ~fsrMuteThreshold
 			]).map( *
 				6.collect({|i| [i+1, ~inputs[i]]}).flat;
 			);

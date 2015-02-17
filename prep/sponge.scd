@@ -12,7 +12,9 @@ PR(\abstractProcess).v.clone({
 		// damping the rods.
 		Server.default.waitForBoot({
 			// open sponge port
+			// ~sponge = SpongeOSC();
 			~sponge = SpongeSLIP(baudRate:115200);
+			// ~sponge.gui;
 			// ~sponge = SpongeEmu(baudRate:115200);
 			// activate the features needed
 			[
