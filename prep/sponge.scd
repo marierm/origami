@@ -20,6 +20,8 @@ PR(\abstractProcess).v.clone({
 			[
 				\acc1xHP, \acc1yHP, \acc1zHP,
 				\acc2xHP, \acc2yHP, \acc2zHP, 
+				\acc1xBP, \acc1yBP, \acc1zBP,
+				\acc2xBP, \acc2yBP, \acc2zBP, 
 				\bend
 			].do{|i,j|
 				~sponge.activateFeature(i);

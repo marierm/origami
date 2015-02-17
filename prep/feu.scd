@@ -1,124 +1,80 @@
-PR(\withDamp).clone({
-	~audioFilePath = "../samples/feuHuards.aiff".resolveRelative;
-	// ~interpolatorPath = Date.getDate.format("feu_%Y-%m-%d_" ++ i ++ ".pri").resolveRelative;
-	// ~onsetSens = 0.5;
-	// ~onsetType = \rcomplex;
-	~onsetSens = 2.0;
-	~onsetType = \power;
-	~onsetDur = 6000;
+PR(\withDampFeu).clone({
+	~audioFilePath = "../samples/05-feu.wav".resolveRelative;
+	~startPosB = SoundFile.openRead(~audioFilePath).numFrames / 2;
+	~tetra = false;
+	~amp = 1.0;
 	~out = 0;
-	
+	~attackTime = 10.0;
+	~ampCtl = false;
 	~prepList = ~prepList.deepCopy.addFunc({
-		~scmirAudioFile = SCMIRAudioFile(~audioFilePath,[[\SpecCentroid]]);
-		~scmirAudioFile.extractFeatures(normalize:false); 
-		~scmirAudioFile.extractOnsets(~onsetSens, ~onsetType);
-		~scmirAudioFile.gatherFeaturesByOnsets(dur: ~onsetDur);
-		~centroids = ~scmirAudioFile.featuredata;
-		~onsets = ~scmirAudioFile.onsetdata;
-		
-		// Sort onsets according to centroids.  Store in a buffer.
-		~indicesBuf = Buffer.loadCollection(
-			Server.default,
-			~onsets.at(~centroids.order)
-		);
-
-		// ~position = Array.fill(~numCoeff,{0});
-		// ~ranges = ~centroids.flop.collect({|i| [i.minItem, i.maxItem]});
-		~range = [~centroids.minItem, ~centroids.maxItem];
-
-		SynthDef(\granuleur, {
-			arg out=0,trigger=1.0, dur=0.1, bufnum = #[0,1],
-			rate=1.0, pos=0, gate=1, envbufnum;
-			// var trigger, sig;
-			var sig;
-			// trigger = Impulse.ar(triggerFreq);
-			sig = GrainBuf.ar(
-				numChannels:1,
-				trigger:trigger,
-				dur:dur,
-				sndbuf:bufnum,
-				rate:rate,
-				pos:pos,
-				interp:2,
-				pan:0,
-				envbufnum:envbufnum,
-				maxGrains:512
-			);
-			Out.ar(out, sig);
-		}).add;
-
-		// Maps a value between 0 and 1 to a position in the buffer.  The
-		// buffer indicesBuf contains time indices sorted according to the
-		// centroid of the segment.
-		SynthDef(\posMapper, {
-			arg out=0, in=0.5, sampleBufnum=0, indicesBufnum=1;
-			Out.kr(
+		SynthDef(\player, {|out=0, bufnum=0, rate=1, trig=1, sPos=0, lp=1, amp=1.0, gate=1.0, atk=10.0|
+			Out.ar(
 				out,
-				BufRd.kr(
-					1, 
-					indicesBufnum,
-					in * BufFrames.kr(indicesBufnum)
-				) / BufDur.kr(sampleBufnum)
+				PlayBuf.ar(
+					numChannels: 2,
+					bufnum: bufnum,
+					rate: rate,
+					trigger: trig,
+					startPos: sPos,
+					loop: lp
+				) * EnvGen.kr(
+					envelope: Env.asr(10,1.0, 20.0),
+					gate: gate,
+					levelScale: 1.0,
+					doneAction: 2
+				) * amp;
 			);
 		}).add;
 
-		~indexBus = Bus.control();
+		~buf = Buffer.read(Server.default, ~audioFilePath);
 
-		~buf = Array.fill(2,{|i|
-			Buffer.readChannel(Server.default, ~audioFilePath,0,-1, [i]);
-		});
-		~envBuf = Buffer.sendCollection(Server.default, Env.perc().asSignal(4096));
+		// ~envBuf = Buffer.sendCollection(Server.default, Env.perc().asSignal(4096));
 
 		~bus = Bus.audio(Server.default, 2);
 		~group = ParGroup();
-
-		{
-			~sponge.activateFeature(\acc1xHP);
-			Server.default.sync;
-			~sponge.activateFeature(\acc1xTrig);
-		}.fork;
 	});
 
 	~asPatternList = ~asPatternList.deepCopy.addFunc({
-		~granuleur = Synth.tail(~group, \granuleur, [
+		~feu = Synth.tail(~group, \player, [
 			\out, ~out,
-			\bufnum, [~buf[0].bufnum, ~buf[1].bufnum],
-			\envbufnum, ~envBuf.bufnum
+			\bufnum, ~buf.bufnum,
+			\amp, ~amp,
+			\atk, ~attackTime,
+			\sPos, 0
 		]);
 
-		~posMapper = Synth.before(~granuleur, \posMapper, [
-			\out, ~indexBus, 			// Bus holding the index in sampleBuf
-			\sampleBufnum, ~buf[0],
-			\indicesBufnum, ~indicesBuf
-		]).map(
-			\in, ~interpolator.cursor.parameters[3].bus
-		);
+		~ampCtl.if({
+			~feu.map(\amp, ~globalAmpBus);
+		});
 
-		~granuleur.map(
-			\trigger, ~sponge[\acc1xTrig].bus,
-			\dur, ~interpolator.cursor.parameters[0].bus,
-			\rate, ~interpolator.cursor.parameters[1].bus,
-			\pos, ~indexBus
-		);
+		~tetra.if({
+			~feu2 = Synth.tail(~group, \player, [
+				\out, ~out + 2,
+				\bufnum, ~buf.bufnum,
+				\amp, ~amp,
+				\atk, ~attackTime,
+				\sPos, ~startPosB
+			]);
+
+			~ampCtl.if({
+				~feu2.map(\amp, ~globalAmpBus);
+			});
+
+		});
 
 		1.asPattern;
 	});
 
 	~stopCleanupList = ~stopCleanupList.deepCopy.addFunc({
-		{
-			~granuleur.free;
-			~posMapper.free;
-		}.try;
+		{ ~feu.release(~relTime); }.try;
+		{ ~feu2.release(~relTime); }.try;
 	});
 
 	~freeCleanupList = ~freeCleanupList.deepCopy.addFunc({
 		~bus.free;
 		~group.free;
 		~buf.free;
-		~envBuf.free;
-		~indicesBuf.free;	
-		~indexBus.free;
 	});
 
-}).chuck(PR(\granule));
+}).chuck(PR(\player));
 

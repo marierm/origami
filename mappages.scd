@@ -37,21 +37,41 @@ Server.program = "/usr/local/bin/scsynth";
 	s.sync;
     BP(\sponge).play;
 	"prep/parents.scd".loadRelative;
+	"prep/parentsFeu.scd".loadRelative;
     "prep/fm.scd".loadRelative;
 	"prep/granSin.scd".loadRelative;
+	"prep/feu.scd".loadRelative;
+	"prep/popper.scd".loadRelative;
+	"prep/melo.scd".loadRelative;
 	s.sync;
-    3.do({|i|
+    // 3.do({|i|
     // 4.do({|i|
-        PR(\fm).chuck(BP(i), parms:(
-			interpolatorPath: ("fm"++i++"*").resolveRelative.pathMatch.sort.last.resolveRelative,
-			notes: ([ \en1, \en2, \en3].keynum.mirror2.clump(3)).flat + (i * 12),
-			numNotes: 2,
-			fsrMuteThreshold: 0.85 // larger number = muting is easier
-		));
-		// 4.wait;
-		s.sync;
-		("ready"++i).postln;
-    });
+	i = 0;
+	PR(\fm).chuck(BP(i), parms:(
+		interpolatorPath: ("fm"++i++"*").resolveRelative.pathMatch.sort.last.resolveRelative,
+		notes: ([ \en1, \en2, \en3].keynum.mirror2.clump(3)).flat + (i * 12),
+		numNotes: 2,
+		fsrMuteThreshold: 0.85 // larger number = muting is easier
+	));
+	// 4.wait;
+	s.sync;
+	// PR(\player).chuck(BP(\feu), parms:(
+	// 	audioFilePath: "samples/05-feu.wav".resolveRelative,	
+	// 	attackTime: 15,
+	// 	relTime: 12,
+	// 	tetra: true
+	// ));
+	s.sync;
+	// PR(\player).chuck(BP(3), parms:(
+	// 	audioFilePath: "samples/01-flm.wav".resolveRelative,
+	// 	attackTime: 5,
+	// 	relTime: 1,
+	// 	amp: -12.dbamp,
+	// 	tetra: true,
+	// 	ampCtl: true
+	// ));
+	("ready"++i).postln;
+    // });
 	i = 3;
 	PR(\fm).chuck(BP(i), parms:(
 		interpolatorPath: ("fm"++i++"*").resolveRelative.pathMatch.sort.last.resolveRelative,
@@ -62,26 +82,22 @@ Server.program = "/usr/local/bin/scsynth";
 	s.sync;
 	("ready"++i).postln;
 
-
-	// PR(\granSin).chuck(BP(0) , parms:(
-	// 	interpolatorPath: ("granSin"++0++"*").resolveRelative.pathMatch.sort.last.resolveRelative,
-	// 	notes: [ \en1 ].keynum,
-	// 	numNotes: 1
-	// ));
-
-	// ("prep/feu.scd").loadRelative;
-	s.sync;
-	// PR(\granule).chuck(BP(\feu), parms:(
-	// 	interpolatorPath: ("presets/feu0*").resolveRelative.pathMatch.sort.last.resolveRelative,
-	// 	// interpolatorPath: ("feu_2013-07-15.pri").resolveRelative,
-	// 	// Date.getDate.format(
-	// 	// 	"feu_%Y-%m-%d.pri").resolveRelative,
-	// 	audioFilePath: "samples/feuHuards.aiff".resolveRelative
-	// ));
-	// 5.wait;
-	// \readyFeu.postln;
 }.fork;
 )
+
+(
+PR(\melo).chuck(BP(1), parms:(
+	interpolatorPath: ("popMelo"++1++"*").resolveRelative.pathMatch.sort.last.resolveRelative,
+	tetra: true
+));
+)
+(
+PR(\popper).chuck(BP(2), parms:(
+	interpolatorPath: ("popMelo"++1++"*").resolveRelative.pathMatch.sort.last.resolveRelative,
+	tetra: true
+));
+)
+
 
 // adjust mute threshold
 BP(0).ampExtractor.set(\threshold, 0.85);
