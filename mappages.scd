@@ -15,12 +15,18 @@ v.free;
 
 
 // pour spongaboon (Marc) (si avec Martin)
-("jackd -R -d netone -n1").unixCmd;
+~jack = ("jackd -R -d netone -n1").unixCmd;
+s.boot;
 ("jack_connect SuperCollider:out_1 system:playback_1
 jack_connect SuperCollider:out_2 system:playback_2").unixCmd;
 
+
+
+("kill" + ~jack).unixCmd;
+
 // pour spongaboon (Marc) (si seul)
 ("jackd -R -dalsa -dhw:0 -r48000 -p128 -n2").unixCmd;
+s.boot;
 ("jack_connect SuperCollider:out_1 system:playback_1
 jack_connect SuperCollider:out_2 system:playback_2").unixCmd;
 
@@ -30,11 +36,11 @@ jack_connect SuperCollider:out_2 system:playback_2").unixCmd;
 // jack_connect spongaboon:capture_2 ebumeter:in.R").unixCmd;
 
 //PERFORMANCE MODE!!!!!!!!!!!!!!
-// Sound check: 
+// Sound check:
 // Myriam: 8 barres
 // Martin: 100%
 // Forme
-// 
+//
 // 5 + 7
 // 3 cycles de E B G C F
 // 1 cycle en 6:4
