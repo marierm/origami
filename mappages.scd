@@ -5,11 +5,29 @@
 // mettre le double-clique plus long
 // Régler message pitcher not understood sur pbOn.
 // Trouver une facon de jouer legato
-v = {SinOsc.ar(Array.series(16, 100, 100),0,[0.1,0.1])}.play;
+v = {SinOsc.ar([\a2,\c3].collect({|i| i.asNote.freq}),0,[0.1,0.1])}.play;
 v.free;
 
-Server.program = "/usr/local/bin/scsynth";
 
+
+// pour Martin
+("jack_netsource -n1 -H 10.10.10.2 -N spongaboon").unixCmd;
+
+
+// pour spongaboon (Marc) (si avec Martin)
+("jackd -R -d netone -n1").unixCmd;
+("jack_connect SuperCollider:out_1 system:playback_1
+jack_connect SuperCollider:out_2 system:playback_2").unixCmd;
+
+// pour spongaboon (Marc) (si seul)
+("jackd -R -dalsa -dhw:0 -r48000 -p128 -n2").unixCmd;
+("jack_connect SuperCollider:out_1 system:playback_1
+jack_connect SuperCollider:out_2 system:playback_2").unixCmd;
+
+
+
+// ("jack_connect spongaboon:capture_1 ebumeter:in.L
+// jack_connect spongaboon:capture_2 ebumeter:in.R").unixCmd;
 
 //PERFORMANCE MODE!!!!!!!!!!!!!!
 // Sound check: 
@@ -28,7 +46,7 @@ Server.program = "/usr/local/bin/scsynth";
 // préparer changement de mapping
 
 (
-Server.program = "/usr/local/bin/scsynth";
+// Server.program = "/usr/local/bin/scsynth";
 {
 	var i;
     s.bootSync;
