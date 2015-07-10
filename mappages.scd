@@ -4,7 +4,8 @@
 // Debugger pitcher not understood
 // mettre le double-clique plus long
 // Régler message pitcher not understood sur pbOn.
-// Trouver une facon de jouer legato
+// Trouver une facon de jouer legato.
+
 v = {SinOsc.ar(Array.series(16, 100, 100),0,[0.1,0.1])}.play;
 v.free;
 
@@ -84,6 +85,15 @@ Server.program = "/usr/local/bin/scsynth";
 
 }.fork;
 )
+
+// RequiredQuarks
+(
+[ "XML", "Ctk", "DayTimer", "Debug", "FileLog", "UnitTesting", "KMeans", "MathLib", "NetLib", "PopUpTreeMenu", "SenseWorld", "TabbedView2_QT", "arduino", "cruciallib", "crucial-library", "crucialviews", "ddwVoicer", "ddwStatusBox", "ddwPatterns", "ddwChucklib", "ddwGUIEnhancements", "ddwCommon", "ddwEQ", "ddwSensitivity", "ddwMixerChannel", "ddwPrototype", "ddwTemperament", "ddwPeakMonitor", "ddwMIDI", "dewdrop_lib", "dmx", "wslib" ].do({|i| Quarks.install(i)});
+)
+
+
+Quarks.installed[0].dump
+
 
 (
 PR(\melo).chuck(BP(1), parms:(
