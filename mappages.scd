@@ -15,26 +15,30 @@ v.free;
 
 
 // pour spongaboon (Marc) (si avec Martin)
-("jackd -R -d netone -n1").unixCmd;
+~jack = ("jackd -R -d netone -n1").unixCmd;
+s.boot;
 ("jack_connect SuperCollider:out_1 system:playback_1
 jack_connect SuperCollider:out_2 system:playback_2").unixCmd;
+
+
+
+("kill" + ~jack).unixCmd;
 
 // pour spongaboon (Marc) (si seul)
 ("jackd -R -dalsa -dhw:0 -r48000 -p128 -n2").unixCmd;
+s.boot;
 ("jack_connect SuperCollider:out_1 system:playback_1
 jack_connect SuperCollider:out_2 system:playback_2").unixCmd;
-
-
 
 // ("jack_connect spongaboon:capture_1 ebumeter:in.L
 // jack_connect spongaboon:capture_2 ebumeter:in.R").unixCmd;
 
 //PERFORMANCE MODE!!!!!!!!!!!!!!
-// Sound check: 
+// Sound check:
 // Myriam: 8 barres
 // Martin: 100%
 // Forme
-// 
+//
 // 5 + 7
 // 3 cycles de E B G C F
 // 1 cycle en 6:4
@@ -103,6 +107,82 @@ jack_connect SuperCollider:out_2 system:playback_2").unixCmd;
 
 // adjust mute threshold
 BP(0).ampExtractor.set(\threshold, 0.85);
+
+
+// Pour Marc (pour répéter): exécuter cette parenthèse.
+(
+// Il est possible d'ajouter des sections (et des boutons).
+// en ajoutant des items dans les arrays ci-dessous.
+// Les temps sont en samples (48000 samples par seconde).
+var sections = ["01-intro", "02-transition", "03-duel", "04-5+7", "05-harmonies"];
+var times = [107112,6743072,11363750,15326004,24751658];
+var parties = ["Martin", "Marc"];
+var window, buttons, synth, buffs, synths;
+var fileNames, pause;
+
+fileNames = ["01-martin-150714_1856.wav", "02-marc-150714_1907.wav"];
+{
+	buffs = fileNames.collect({ |i|
+		Buffer.read(s, ("origamiReaper" +/+ i).resolveRelative)
+	});
+
+	SynthDef(\bufReader, {|out=0, startPos=0, rate=0, bufnum=0, t_trig=0, amp=0|
+		Out.ar(
+			out,
+			PlayBuf.ar(2, bufnum, rate, t_trig, startPos) * amp
+		);
+	}).add;
+
+	s.sync;
+
+	synths = buffs.collect({ |i|
+		Synth(\bufReader, [\bufnum, i.bufnum ]);
+	});
+}.fork;
+
+window = Window("Pratique pour Marc.", 1000@200).front;
+
+pause = [
+	Button().states_(
+		[
+			["Pause"],
+			["Paused"]
+		]
+	).action_({ |butt|
+		synths.do({ |i|
+			i.set(\rate, (butt.value * -1) + 1);
+		});
+	})
+];
+buttons = [
+	Array.fill(times.size, {|j|
+		Button().states_(
+			[[sections[j]]]
+		).action_({ |butt|
+			synths.do({ |i|
+				i.set(\rate, 1, \startPos, times[j], \t_trig, 1);
+			});
+			pause[0].value_(0);
+		})
+	}),
+	Array.fill(2, {|j|
+		Button().states_(
+			[
+				[parties[j], Color.gray(0.7)],
+				[parties[j], Color.gray(0.1)]
+			]
+		).action_({ |butt|
+			synths[j].set(\amp, butt.value);
+		})
+	}) ++ pause
+];
+
+window.layout_( GridLayout.rows(*buttons) ).front;
+window.onClose_({
+	synths.do(_.free);
+	buffs.do(_.free);
+});
+)
 
 
 BP(3).chords = ([
