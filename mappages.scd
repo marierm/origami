@@ -114,6 +114,7 @@ BP(0).ampExtractor.set(\threshold, 0.85);
 // Il est possible d'ajouter des sections (et des boutons).
 // en ajoutant des items dans les arrays ci-dessous.
 // Les temps sont en samples (48000 samples par seconde).
+// Les noms sont arbitraires.
 var sections = ["01-intro", "02-transition", "03-duel", "04-5+7", "05-harmonies"];
 var times = [107112,6743072,11363750,15326004,24751658];
 var parties = ["Martin", "Marc"];
