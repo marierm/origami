@@ -1,12 +1,17 @@
-// Fix removepoint; Ajouter contrôle de seuil et de durée dans l'interpolateur
-// feu.  Seuil sur capteur de pression???
-// Permettre d'enregistrer les gestes du partenaire?
-// Debugger pitcher not understood
-// mettre le double-clique plus long
-// Régler message pitcher not understood sur pbOn.
-// Trouver une facon de jouer legato.
 
-v = {SinOsc.ar(Array.series(16, 100, 100),0,[0.1,0.1])}.play;
+// Duo avec Pat
+
+// 1. Voix de Cage
+// 2. Ajouter notes d'éponge
+// 3. Grumaux noisy dans le grave
+// 4. Impacts avec pyramide de gréments
+// 5. Duo modal
+// 6. Piano
+// 7. Finale
+
+
+
+v = {SinOsc.ar(40,0,[0.1,0.1])}.play;
 v.free;
 
 Server.program = "/usr/local/bin/scsynth";
@@ -27,6 +32,45 @@ Server.program = "/usr/local/bin/scsynth";
 
 // faire muter
 // préparer changement de mapping
+
+(
+s.boot;
+
+"export WINEPREFIX=/home/marierm/.reaper64; export WINEARCH=win64; schedtool -F -p 54 -e env WINE_RT=55 WINE_SRV_RT=56 wine \"/home/marierm/.reaper64/drive_c/Program Files/REAPER (x64)/reaper.exe\" Z:\\\\home\\\\marierm\\\\docs\\\\doc\\\\compo\\\\2011\\\\albinoReaper\\\\albinoReaper.RPP".unixCmd;
+
+"killall jconvolver;jconvolver ~/docs/soundBank/ir/True\\ M7/Halls/amsterdamHall.conf".unixCmd;
+)
+(
+"jack_disconnect reaper:out_1 jconvolver:inL
+jack_disconnect reaper:out_2 jconvolver:inR
+jack_connect reaper:out_3 jconvolver:inL
+jack_connect reaper:out_4 jconvolver:inR
+jack_connect jconvolver:outL reaper:in_7
+jack_connect jconvolver:outR reaper:in_8".unixCmd;
+
+// jack_connect reaper:out_1 firewire_pcm:0001f20000085e89_pbk_Main-L_out
+// jack_connect reaper:out_2 firewire_pcm:0001f20000085e89_pbk_Main-R_out
+
+"
+jack_connect reaper:out_1 system:playback_1
+jack_connect reaper:out_2 system:playback_2
+jack_disconnect SuperCollider:out_5 reaper:in_3
+jack_disconnect SuperCollider:out_6 reaper:in_4
+jack_disconnect SuperCollider:out_9 reaper:in_5
+jack_disconnect SuperCollider:out_10 reaper:in_6
+jack_disconnect SuperCollider:out_1 reaper:in_7
+jack_disconnect SuperCollider:out_2 reaper:in_8
+jack_disconnect SuperCollider:out_1 reaper:in_9
+jack_disconnect SuperCollider:out_2 reaper:in_10
+jack_disconnect SuperCollider:out_1 reaper:in_1
+jack_disconnect SuperCollider:out_2 reaper:in_2
+jack_disconnect SuperCollider:out_1 system:playback_1
+jack_disconnect SuperCollider:out_2 system:playback_2
+
+jack_connect SuperCollider:out_1 reaper:in_11
+jack_connect SuperCollider:out_2 reaper:in_12
+".unixCmd;
+)
 
 (
 Server.program = "/usr/local/bin/scsynth";
@@ -51,17 +95,18 @@ Server.program = "/usr/local/bin/scsynth";
 	PR(\fm).chuck(BP(i), parms:(
 		interpolatorPath: ("fm"++i++"*").resolveRelative.pathMatch.sort.last.resolveRelative,
 		notes: ([ \en1, \en2, \en3].keynum.mirror2.clump(3)).flat + (i * 12),
+		// notes: ([ \bb0, \bb1, \bb2].keynum.mirror2.clump(3)).flat + (i * 12),
 		numNotes: 2,
 		fsrMuteThreshold: 0.85 // larger number = muting is easier
 	));
 	// 4.wait;
 	s.sync;
-	// PR(\player).chuck(BP(\feu), parms:(
-	// 	audioFilePath: "samples/05-feu.wav".resolveRelative,	
-	// 	attackTime: 15,
-	// 	relTime: 12,
-	// 	tetra: true
-	// ));
+	PR(\player).chuck(BP(\feu), parms:(
+		audioFilePath: "samples/05-feu.wav".resolveRelative,	
+		attackTime: 15,
+		relTime: 12,
+		tetra: true
+	));
 	s.sync;
 	// PR(\player).chuck(BP(3), parms:(
 	// 	audioFilePath: "samples/01-flm.wav".resolveRelative,
