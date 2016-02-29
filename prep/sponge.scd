@@ -187,26 +187,7 @@ PR(\abstractProcess).v.clone({
 					buttState: 1
 				);
 
-				// button 6 8vb
-
-				// ~butts.modes[g].addFunc(
-				// 	button: 6,
-				// 	function: {
-				// 		\octVbTmp.post; h.postln;
-				// 		BP(h).octTmp(-1);
-				// 	},
-				// 	levels: (0..31),
-				// 	buttState: 1
-				// );
-				// ~butts.modes[g].addFunc(
-				// 	button: 6,
-				// 	function: {
-				// 		\octReset.post; h.postln;
-				// 		BP(h).octReset;
-				// 	},
-				// 	levels: (0..31),
-				// 	buttState: 0
-				// );
+				// button 6 = 8vb
 				~butts.modes[g].addFunc(
 					button: 6,
 					function: {
@@ -218,25 +199,6 @@ PR(\abstractProcess).v.clone({
 				);
 
 				// button 7 = 8va
-
-				// ~butts.modes[g].addFunc(
-				// 	button: 7,
-				// 	function: {
-				// 		\octVaTmp.post; h.postln;
-				// 		BP(h).octTmp(1);
-				// 	},
-				// 	levels: (0..31),
-				// 	buttState: 1
-				// );
-				// ~butts.modes[g].addFunc(
-				// 	button: 7,
-				// 	function: {
-				// 		\octReset.post; h.postln;
-				// 		BP(h).octReset;
-				// 	},
-				// 	levels: (0..31),
-				// 	buttState: 0
-				// );
 				~butts.modes[g].addFunc(
 					button: 7,
 					function: {
@@ -265,6 +227,27 @@ PR(\abstractProcess).v.clone({
 					},
 					buttState: 0
 				);
+				// button 8 = prevBuf
+				~butts.modes[g].addFunc(
+					button: 8,
+					function: {
+						\prevBuf.post; h.postln;
+						BP(h).prevBuf;
+					},
+					levels: (0..31),
+					buttState: 1
+				);
+				// button 9 = nextBuf
+				~butts.modes[g].addFunc(
+					button: 8,
+					function: {
+						\nextBuf.post; h.postln;
+						BP(h).nextBuf;
+					},
+					levels: (0..31),
+					buttState: 1
+				);
+
 			};
 
 			// In modes 5 to 8, buttons 0 to 4 sets harmony of the

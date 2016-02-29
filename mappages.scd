@@ -72,8 +72,8 @@ jack_connect SuperCollider:out_2 reaper:in_12
 ".unixCmd;
 )
 
+s.meter
 (
-Server.program = "/usr/local/bin/scsynth";
 {
 	var i;
     s.bootSync;
@@ -88,6 +88,7 @@ Server.program = "/usr/local/bin/scsynth";
 	"prep/feu.scd".loadRelative;
 	"prep/popper.scd".loadRelative;
 	"prep/melo.scd".loadRelative;
+	"prep/granulotron.scd".loadRelative;
 	s.sync;
     // 3.do({|i|
     // 4.do({|i|
@@ -101,13 +102,23 @@ Server.program = "/usr/local/bin/scsynth";
 	));
 	// 4.wait;
 	s.sync;
-	PR(\player).chuck(BP(\feu), parms:(
-		audioFilePath: "samples/05-feu.wav".resolveRelative,	
-		attackTime: 15,
-		relTime: 12,
-		tetra: true
+	// PR(\player).chuck(BP(\feu), parms:(
+	// 	audioFilePath: "samples/05-feu.wav".resolveRelative,	
+	// 	attackTime: 15,
+	// 	relTime: 12,
+	// 	tetra: true
+	// ));
+	// s.sync;
+	i = 1;
+	PR(\granulotron).chuck(BP(i), parms:(
+		audioFilePath: "samples/granulotron/*.wav".resolveRelative,
+		interpolatorPath: ("granulotron"++i++"*").resolveRelative.pathMatch.sort.last.resolveRelative,
+		notes: ([ \en1, \en2, \en3].keynum.mirror2.clump(3)).flat + (i * 12),
+		// notes: ([ \bb0, \bb1, \bb2].keynum.mirror2.clump(3)).flat + (i * 12),
+		numNotes: 2,
+		fsrMuteThreshold: 0.85 // larger number = muting is easier
 	));
-	s.sync;
+
 	// PR(\player).chuck(BP(3), parms:(
 	// 	audioFilePath: "samples/01-flm.wav".resolveRelative,
 	// 	attackTime: 5,
@@ -131,9 +142,24 @@ Server.program = "/usr/local/bin/scsynth";
 }.fork;
 )
 
+BP(1).buffers[0]
+
+.collect(_.path)
+Buffer
+
+BP(1).interpolator.newSave(Date.getDate.format("granulotron"++1++"_%Y-%m-%d_%H-%M-%S.pri").resolveRelative);
+
+BP(1).interpolator.cursor.parameters.select({|i| i.name.beginsWith("granDur");	})[0].bus
+
+BP(1).interpolator.cursor.parameters.size
+
+BP(1).interpolator.gui
+
+Date.getDate.format("granulotron"++1++"_%Y-%m-%d_%H-%M-%S.pri")
+
 // RequiredQuarks
 (
-[ "XML", "Ctk", "DayTimer", "Debug", "FileLog", "UnitTesting", "KMeans", "MathLib", "NetLib", "PopUpTreeMenu", "SenseWorld", "TabbedView2_QT", "arduino", "cruciallib", "crucial-library", "crucialviews", "ddwVoicer", "ddwStatusBox", "ddwPatterns", "ddwChucklib", "ddwGUIEnhancements", "ddwCommon", "ddwEQ", "ddwSensitivity", "ddwMixerChannel", "ddwPrototype", "ddwTemperament", "ddwPeakMonitor", "ddwMIDI", "dewdrop_lib", "dmx", "wslib" ].do({|i| Quarks.install(i)});
+[ "XML", "Ctk", "DayTimer", "Debug", "FileLog", "UnitTesting", "KMeans", "MathLib", "NetLib", "PopUpTreeMenu", "SenseWorld", "TabbedView2_QT", "arduino", "crucial-library", "crucialviews", "ddwVoicer", "ddwStatusBox", "ddwPatterns", "ddwChucklib", "ddwGUIEnhancements", "ddwCommon", "ddwEQ", "ddwSensitivity", "ddwMixerChannel", "ddwPrototype", "ddwTemperament", "ddwPeakMonitor", "ddwMIDI", "dewdrop_lib", "dmx", "wslib" ].do({|i| Quarks.install(i)});
 )
 
 
