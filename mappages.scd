@@ -102,6 +102,7 @@ s.meter
 	));
 	// 4.wait;
 	s.sync;
+	("ready"++i).postln;
 	// PR(\player).chuck(BP(\feu), parms:(
 	// 	audioFilePath: "samples/05-feu.wav".resolveRelative,	
 	// 	attackTime: 15,
@@ -142,7 +143,17 @@ s.meter
 }.fork;
 )
 
+
+BP(1).prevBuf;
+
 BP(1).buffers[0]
+
+
+
+~currentBuf = 4;
+~currentBuf = (~currentBuf - 1) % ~numPreRecBuf;
+
+~numPreRecBuf = 6;
 
 .collect(_.path)
 Buffer

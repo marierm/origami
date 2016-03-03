@@ -92,11 +92,11 @@ PR(\abstractProcess).v.clone({
 				buttState: 1
 			);
 
-			// buttons 0 to 5 are made modifier keys.
+			// buttons 0 to 4 (left hand) are made modifier keys.
 			~butts.modes[0].buttonFunctions[4..0].do{|i,j| i.makeModifier(j)};
 			// In modes 1 to 4, buttons 0 to 4 sets the pitch of the corresponding
 			// voice.  
-			(1..4).do{|g,h|
+			(1..4).do{|g,h| //g is mode number, h is BP number: BP(h)
 				// make new modes
 				~butts.newMode;
 				// buttons 0 to 4 are not really modifiers.  They set the level
@@ -227,28 +227,27 @@ PR(\abstractProcess).v.clone({
 					},
 					buttState: 0
 				);
-				// button 8 = prevBuf
-				~butts.modes[g].addFunc(
-					button: 8,
-					function: {
-						\prevBuf.post; h.postln;
-						BP(h).prevBuf;
-					},
-					levels: (0..31),
-					buttState: 1
-				);
-				// button 9 = nextBuf
-				~butts.modes[g].addFunc(
-					button: 8,
-					function: {
-						\nextBuf.post; h.postln;
-						BP(h).nextBuf;
-					},
-					levels: (0..31),
-					buttState: 1
-				);
-
 			};
+
+			// 
+			~butts.modes[2].addFunc( // mode for granulotron
+				button: 8, //previous Buffer
+				function: {
+					\prevBuf.postln;
+					BP(1).prevBuf; //granulotron
+				},
+				levels: (0..31),
+				buttState: 1
+			);
+			~butts.modes[2].addFunc(
+				button: 9, //next Buffer
+				function: {
+					\nextBuf.postln;
+					BP(1).nextBuf; //granulotron
+				},
+				levels: (0..31),
+				buttState: 1
+			);
 
 			// In modes 5 to 8, buttons 0 to 4 sets harmony of the
 			// corresponding voice.
@@ -322,77 +321,18 @@ PR(\abstractProcess).v.clone({
 					buttState: 1
 				);
 
-				// Clicking on button 8 holds the current chord even if left
-				// buttons are released.
-				// ~butts.modes[g].addFunc(
-				// 	button: 8,
-				// 	function: {
-				// 		~butts.modes[g].level_(64);
-				// 	},
-				// 	levels: (0..31),
-				// 	buttState: 1
-				// );
-				// ~butts.modes[g].addFunc(
-				// 	button: 8,
-				// 	function: {
-				// 		~butts.modes[g].level_(0)
-				// 	},
-				// 	levels: ([64]),
-				// 	buttState: 0
-				// );
-
-				// button 6 8vb
-
-				// ~butts.modes[g].addFunc(
-				// 	button: 6,
-				// 	function: {
-				// 		\octVbTmp.post; h.postln;
-				// 		BP(h).octTmp(-1);
-				// 	},
-				// 	levels: (0..31),
-				// 	buttState: 1
-				// );
-				// ~butts.modes[g].addFunc(
-				// 	button: 6,
-				// 	function: {
-				// 		\octReset.post; h.postln;
-				// 		BP(h).octReset;
-				// 	},
-				// 	levels: (0..31),
-				// 	buttState: 0
-				// );
 				~butts.modes[g].addFunc(
-					button: 6,
+					button: 6, // One octave down.
 					function: {
-						\octVbStuck.post; h.postln;
+						\octVb.post; h.postln;
 						BP(h).octVb;
 					},
 					levels: (0..31),
 					buttState: 1
 				);
 
-				// button 7 = 8va
-
-				// ~butts.modes[g].addFunc(
-				// 	button: 7,
-				// 	function: {
-				// 		\octVaTmp.post; h.postln;
-				// 		BP(h).octTmp(1);
-				// 	},
-				// 	levels: (0..31),
-				// 	buttState: 1
-				// );
-				// ~butts.modes[g].addFunc(
-				// 	button: 7,
-				// 	function: {
-				// 		\octReset.post; h.postln;
-				// 		BP(h).octReset;
-				// 	},
-				// 	levels: (0..31),
-				// 	buttState: 0
-				// );
 				~butts.modes[g].addFunc(
-					button: 7,
+					button: 7, // One octave up.
 					function: {
 						\octVaStuck.post; h.postln;
 						BP(h).octVa;

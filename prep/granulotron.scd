@@ -10,16 +10,19 @@ PR(\withChords).clone({ 					// granulotron
 	~audioFilePath = "../samples/granulotron/*.wav".resolveRelative;
 	~fileNames = List[];
 	~currentBuf = 4;
+	~numLiveRecBuf = 10;
+	~liveRecBufLen = 48000 * 10.0; // 10 seconds.
+	~liveRecBufNumChan = 2;
 	~prevBuf = {
-		~currentBuf = (~currentBuf - 1) % ~numBufs;
-		~currentBuf.post;
+		~currentBuf = (~currentBuf - 1) % ~numPreRecBuf;
+		~buffers[~currentBuf][0].path.postln;
 		~granulotron.isPlaying.if({
 			~granulotron.set(\bufL, ~buffers[~currentBuf][0]);
 			~granulotron.set(\bufR, ~buffers[~currentBuf][1]);
 		});
 	};
 	~nextBuf = {
-		~currentBuf = (~currentBuf + 1) % ~numBufs;
+		~currentBuf = (~currentBuf + 1) % ~numPreRecBuf;
 		~buffers[~currentBuf][0].path.postln;
 		~granulotron.isPlaying.if({
 			~granulotron.set(\bufL, ~buffers[~currentBuf][0]);
@@ -37,7 +40,7 @@ PR(\withChords).clone({ 					// granulotron
 				Buffer.readChannel(Server.default, path, channels: [1])
 			]
 		});
-		~numBufs = ~buffers.size;
+		~numPreRecBuf = ~buffers.size;
 		
 		SynthDef(\granulotron, {
 			arg out=0, gate=1, att=0.2, rel=0.01;
@@ -51,7 +54,7 @@ PR(\withChords).clone({ 					// granulotron
 					rate: \rate.kr(1),
 					centerPos: \centerPos.kr(0.5),
 					dur: \granDur.kr(0.1),
-					pan: \pan.kr(0),
+					pan: [-1,1] * \pan.kr(1),
 					amp: \amp.kr(0.1),
 					interp: 4
 				) * EnvGen.kr(Env.asr(att, 1, rel), gate, doneAction:2);
