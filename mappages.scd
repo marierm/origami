@@ -11,7 +11,7 @@
 
 
 
-v = {SinOsc.ar(40,0,[0.1,0.1])}.play;
+v = {SinOsc.ar(440,0,[0.1,0.1])}.play;
 v.free;
 
 Server.program = "/usr/local/bin/scsynth";
@@ -72,7 +72,6 @@ jack_connect SuperCollider:out_2 reaper:in_12
 ".unixCmd;
 )
 
-s.meter
 (
 {
 	var i;
@@ -144,8 +143,14 @@ s.meter
 )
 
 
-BP(1).prevBuf;
+BP(1).copyLiveRecBuf;
 
+BP(1).liveRecBuf.dump
+BP(1).liveRecBuf.play;
+
+
+s.meter;
+s.plotTree
 BP(1).buffers[0]
 
 
