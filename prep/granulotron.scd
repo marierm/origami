@@ -9,49 +9,52 @@
 PR(\withChords).clone({ 					// granulotron
 	~audioFilePath = "../samples/granulotron/*.wav".resolveRelative;
 	~fileNames = List[];
-	~currentBuf = 4;
-	~numLiveRecBuf = 4;
+	~currentBuf = 0;
+	~numLiveRecBuf = 5;
 	~sr = Server.default.sampleRate;
-	~liveRecBufLen = ~sr * 10.0; // 10 seconds.
+	~liveRecBufLen = ~sr * 4.0; // 10 seconds in samples.
 	~liveRecBufNumChan = 2;
-	~liveRecLength = 4.0;
+	~liveRecLength = ~sr * 4.0; // in samples.
 	~destBuf = 0;
-	~prevBuf = {
-		~currentBuf = (~currentBuf - 1) % ~numPreRecBuf;
-		~buffers[~currentBuf][0].path.postln;
+	~prevBuf = { ~setBuf.value(~currentBuf - 1); };
+	~nextBuf = { ~setBuf.value(~currentBuf + 1); };
+	~setBuf = { |number|
+		~currentBuf = number % ~numBuffers;
+		~allBuffers[~currentBuf][0].path.postln;
 		~granulotron.isPlaying.if({
-			~granulotron.set(\bufL, ~buffers[~currentBuf][0]);
-			~granulotron.set(\bufR, ~buffers[~currentBuf][1]);
+			~liveRecBufNumChan.do({|i|
+				~granulotron.set(
+					[\bufL, \bufR][i],
+					~allBuffers[~currentBuf][i]
+				);
+			});
 		});
 	};
-	~nextBuf = {
-		~currentBuf = (~currentBuf + 1) % ~numPreRecBuf;
-		~buffers[~currentBuf][0].path.postln;
-		~granulotron.isPlaying.if({
-			~granulotron.set(\bufL, ~buffers[~currentBuf][0]);
-			~granulotron.set(\bufR, ~buffers[~currentBuf][1]);
-		});
-	};
-	OSCdef(\getLiveRecBufPos,{ |time, msg|
+	~oscFunc = OSCFunc({ |msg|
 		var bufPos, id;
-		
 		bufPos = msg[3];
 		id = msg[2];
 		(id == 0).if({
-			~liveRecBufNumChan.do({|i|
-				~liveRecBuf[i].copyLoopTo(
-					buffer: ~liveBuffers[~destBuf.asInteger][i],
+			BP(1).liveRecBufNumChan.do({|i|
+				"Copying buffer ".post;
+				BP(1).liveRecBuf[i].bufnum.post;
+				" to buffer ".post;
+				BP(1).liveBuffers[BP(1).destBuf][i].bufnum.postln;
+				"Length: ".post;
+				BP(1).liveRecLength.postln;
+				BP(1).liveRecBuf[i].copyLoopTo(
+					buf: BP(1).liveBuffers[BP(1).destBuf.asInteger][i],
 					dstStartAt: 0,
-					srcStratAt: bufPos,
-					numSamples: ~liveRecLength * ~sr
+					srcStartAt: (bufPos - BP(1).liveRecLength),
+					numSamples: BP(1).liveRecLength
 				);
 			});
 		});
 	}, "/tr", Server.default.addr);
 	
-	~copyLiveRecBuf = { |len=4.0|
-		~destBuf = len - 2;
-		~liveRecLength = len;
+	~copyLiveRecBuf = { |liveRecBufNum=0|
+		~destBuf = liveRecBufNum.asInteger;
+		// ~liveRecLength = len * ~sr;
 		~recorder[0].set(\t_trig, 1.0);
 	};
 
@@ -74,12 +77,13 @@ PR(\withChords).clone({ 					// granulotron
 			~liveBuffers = ~numLiveRecBuf.collect({ |i|
 				~liveRecBufNumChan.collect({|chan|
 					Buffer.alloc(
-						Server.default, (i + 2) * ~sr , 1
+						Server.default, ~liveRecBufLen, 1
 					);
 				});
 			});
 
-			~numPreRecBuf = ~buffers.size;
+			~allBuffers = ~liveBuffers ++ ~buffers;
+			~numBuffers = ~allBuffers.size;
 
 			SynthDef(\granulotron, {
 				arg out=0, gate=1, att=0.2, rel=0.01;
@@ -169,6 +173,7 @@ PR(\withChords).clone({ 					// granulotron
 
 	~freeCleanupList = ~freeCleanupList.deepCopy.addFunc({
 		~bus.free;
-		~buffers.do(_.free);
+		~allBuffers.do({|i| i.do(_.free) });
+		~liveRecBuf.do(_.free);
 	});
 }).chuck(PR(\granulotron));

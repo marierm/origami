@@ -11,10 +11,8 @@
 
 
 
-v = {SinOsc.ar(440,0,[0.1,0.1])}.play;
+v = {SinOsc.ar(Array.geom(32,33.midicps, 2.pow(1/3)),0,[0.1,0.1])}.play;
 v.free;
-
-Server.program = "/usr/local/bin/scsynth";
 
 
 //PERFORMANCE MODE!!!!!!!!!!!!!!
@@ -138,15 +136,12 @@ jack_connect SuperCollider:out_2 reaper:in_12
 	// 4.wait;
 	s.sync;
 	("ready"++i).postln;
-
+	"All set!".postln;
 }.fork;
 )
 
-
-BP(1).copyLiveRecBuf;
-
-BP(1).liveRecBuf.dump
-BP(1).liveRecBuf.play;
+BP(1).copyLiveRecBuf(1);
+BP(1).liveBuffers[1][0].play;
 
 
 s.meter;
@@ -154,14 +149,23 @@ s.plotTree
 BP(1).buffers[0]
 
 
+PR
 
-~currentBuf = 4;
-~currentBuf = (~currentBuf - 1) % ~numPreRecBuf;
+Proto({
+	~number = 42;
+	~oscFunc = OSCFunc({ |msg| msg.postln; this.number.postln}, "/test");
+}).chuck(PR(\test));
 
-~numPreRecBuf = 6;
+PR(\test).chuck(BP(\zztest));
+BP(\zztest).free;
 
-.collect(_.path)
-Buffer
+NetAddr.localAddr.sendMsg("/test", 21)
+
+
+Environment
+
+
+
 
 BP(1).interpolator.newSave(Date.getDate.format("granulotron"++1++"_%Y-%m-%d_%H-%M-%S.pri").resolveRelative);
 

@@ -37,7 +37,7 @@ PR(\abstractProcess).v.clone({
 			~butts.modes[0].buttonFunctions[9..6].do{|i,j|
 				i.functions_(
 					Dictionary.newFrom([
-						1, Array.newClear(32).putEach([0,1,2,4],[
+						1, Array.newClear(32).putEach([0,1,4],[
 							{			// 0
 								\stop.post; j.postln;
 								BP(j).stopNow;
@@ -46,10 +46,10 @@ PR(\abstractProcess).v.clone({
 								\play.post; j.postln;
 								BP(j).play(0,doReset: true);
 							},
-							{ 			// 2
-								\pbOn.post; j.postln;
-								BP(j).pitcher.map(\bend, ~sponge[\bend].bus);
-							},
+							// { 			// 2
+							// 	\pbOn.post; j.postln;
+							// 	BP(j).pitcher.map(\bend, ~sponge[\bend].bus);
+							// },
 							{			// 4
 								\freeze.post; j.postln;
 								BP(j).freezeMe;
@@ -57,8 +57,8 @@ PR(\abstractProcess).v.clone({
 						]),
 						0, Array.newClear(32).putEach([2, 8, 16],[
 							{ 			// 2
-								\pbOff.post; j.postln;
-								BP(j).pitcher.set(\bend, 0);
+								"Granulotron mode".postln;
+								BP(\sponge).butts.mode_(9);
 							},
 							{
 								("mode harmo " + (j + 1)).postln;
@@ -229,25 +229,6 @@ PR(\abstractProcess).v.clone({
 				);
 			};
 
-			// 
-			~butts.modes[2].addFunc( // mode for granulotron
-				button: 8, //previous Buffer
-				function: {
-					\prevBuf.postln;
-					BP(1).prevBuf; //granulotron
-				},
-				levels: (0..31),
-				buttState: 1
-			);
-			~butts.modes[2].addFunc(
-				button: 9, //next Buffer
-				function: {
-					\nextBuf.postln;
-					BP(1).nextBuf; //granulotron
-				},
-				levels: (0..31),
-				buttState: 1
-			);
 
 			// In modes 5 to 8, buttons 0 to 4 sets harmony of the
 			// corresponding voice.
@@ -361,6 +342,95 @@ PR(\abstractProcess).v.clone({
 				);
 			};
 
+			// newMode for granulotron. (l2 + r2)
+			~butts.newMode;
+
+			// button 9 starts granulotron.
+			// Double click stops it.
+			~butts.modes[9].addFunc(
+				button: 9,
+				function: {
+					\stop.post; h.postln;
+					BP(1).stopNow;
+				},
+				levels: (0..31),
+				buttState: 2
+			);
+			~butts.modes[9].addFunc(
+				button: 9,
+				function: {
+					\play.post; h.postln;
+					BP(1).play(0,doReset: true);
+				},
+				levels: (0..31),
+				buttState: 1
+			);
+			// button 5 switch back to mode 0 (any level works).
+			~butts.modes[9].addFunc(
+				button: 5,
+				function: {
+					BP(\sponge).butts.mode_(0);
+					("mode:" + 0).postln; 
+					BP(\sponge).butts.mode.level_(0);
+				},
+				levels: (0..31),
+				buttState: 1
+			);
+
+			~butts.modes[9].addFunc( // mode for granulotron
+				button: 6, //previous Buffer
+				function: {
+					\prevBuf.postln;
+					BP(1).prevBuf; //granulotron
+				},
+				levels: (0..31),
+				buttState: 1
+			);
+			~butts.modes[9].addFunc(
+				button: 7, //next Buffer
+				function: {
+					\nextBuf.postln;
+					BP(1).nextBuf; //granulotron
+				},
+				levels: (0..31),
+				buttState: 1
+			);
+			// Double click on button 8 freezes the voice.
+			// Single click unfreezes it.
+			(8..9).do({|i|
+				~butts.modes[9].buttonFunctions[i].enableNclick;
+			});
+			~butts.modes[9].addFunc(
+				button: 8,
+				function: {
+					\unfreeze.post; h.postln;
+					BP(1).unfreezeMe;
+				},
+				levels: (0..31),
+				buttState: 1
+			);
+			~butts.modes[9].addFunc(
+				button: 8,
+				function: {
+					\freeze.post; h.postln;
+					BP(1).freezeMe;
+				},
+				levels: (0..31),
+				buttState: 2
+			);
+
+
+			5.do({ |i| // record buffers for granulotron.
+				~butts.modes[9].addFunc(
+					button: i,
+					function: {
+						("Recording buffer " ++ i).postln;
+						BP(1).copyLiveRecBuf(i);
+					},
+					levels: (0..31),
+					buttState: 1
+				);
+			});
 		});
 	};
 
